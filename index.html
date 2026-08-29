@@ -1,0 +1,2107 @@
+<meta charset="UTF-8">
+<title>Chapter 001 — Revelation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=Archivo:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --void:#0b0906;
+    --void-deep:#050403;
+    --bone:#ece4d3;
+    --bone-dim:#b9af9b;
+    --ash:#75695a;
+    --gold:#b68a45;
+    --gold-bright:#e8c077;
+    --line: rgba(236,228,211,0.14);
+    --line-strong: rgba(236,228,211,0.28);
+    --surface: #141009;
+
+    --font-display: 'Fraunces', 'Iowan Old Style', 'Times New Roman', serif;
+    --font-ui: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: 'Space Mono', 'SF Mono', 'Courier New', monospace;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0; padding:0;
+    background: var(--void);
+    color: var(--bone);
+    width:100%;
+    overflow-x:hidden;
+  }
+  body{
+    font-family: var(--font-ui);
+    font-size: 16px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background: var(--gold); color: var(--void-deep); }
+
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; color:inherit; background:none; border:none; cursor:pointer; }
+
+  h1,h2,h3,p{ margin:0; }
+  h1,h2,h3{ text-wrap: balance; }
+
+  .eyebrow{
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight:600;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--ash);
+  }
+  .mono{
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .display{
+    font-family: var(--font-display);
+    font-weight: 400;
+    color: var(--bone);
+  }
+
+  .wrap{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 5vw, 64px);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  /* ---------- scroll reveal ----------
+     Every section stays hidden until it's scrolled to, then unveils
+     itself — nothing downstream of the hero is just sitting there
+     pre-rendered and visible. */
+  .reveal{
+    opacity: 0;
+    transform: translateY(34px);
+    transition: opacity 1100ms cubic-bezier(0.16,0.8,0.24,1),
+                transform 1100ms cubic-bezier(0.16,0.8,0.24,1);
+    will-change: opacity, transform;
+  }
+  .reveal.in-view{ opacity: 1; transform: none; }
+
+  /* ---------- hero-exit veil ----------
+     A deliberate cut to black between the dissolve and the artifact,
+     so arriving at the next section reads as an unveiling, not a scroll. */
+  #transition-veil{
+    position: fixed; inset:0; z-index: 90;
+    background: var(--void-deep);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 900ms ease;
+  }
+  #transition-veil.on{ opacity: 1; }
+
+  /* ---------- preloader ---------- */
+  #preloader{
+    position:fixed; inset:0; z-index:200;
+    background: var(--void);
+    display:flex; align-items:center; justify-content:center;
+    transition: opacity 900ms ease;
+  }
+  #preloader .digits{
+    display:flex; gap: 28px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.4em;
+    color: var(--ash);
+  }
+  #preloader .digits span{
+    opacity: 0.15;
+    transition: opacity 400ms ease, color 400ms ease;
+  }
+  #preloader .digits span.on{ opacity:1; color: var(--gold-bright); }
+  #preloader.hidden{ opacity:0; pointer-events:none; }
+
+  /* ---------- hero ---------- */
+  .hero-wrap{
+    position:relative;
+    height: 100vh;
+  }
+  .hero-stage{
+    position: relative;
+    height:100%;
+    width:100%;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse at 50% 42%, rgba(182,138,69,0.05), transparent 55%),
+      radial-gradient(ellipse at 50% 50%, var(--void) 0%, var(--void-deep) 78%);
+  }
+  .hero-stage::before{
+    content:"";
+    position:absolute; inset:0;
+    pointer-events:none;
+    opacity:0.5;
+    background-image:
+      radial-gradient(1px 1px at 12% 22%, rgba(236,228,211,0.5), transparent 60%),
+      radial-gradient(1px 1px at 82% 18%, rgba(236,228,211,0.35), transparent 60%),
+      radial-gradient(1.5px 1.5px at 68% 78%, rgba(236,228,211,0.4), transparent 60%),
+      radial-gradient(1px 1px at 24% 82%, rgba(236,228,211,0.3), transparent 60%),
+      radial-gradient(1px 1px at 91% 60%, rgba(236,228,211,0.3), transparent 60%),
+      radial-gradient(1px 1px at 6% 55%, rgba(236,228,211,0.25), transparent 60%),
+      radial-gradient(1px 1px at 46% 8%, rgba(236,228,211,0.3), transparent 60%),
+      radial-gradient(1px 1px at 55% 94%, rgba(236,228,211,0.25), transparent 60%);
+  }
+  #angel-canvas{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    display:block;
+    touch-action: none;
+    cursor: grab;
+  }
+  #angel-canvas.dragging{ cursor: grabbing; }
+  .hero-ui{
+    position:absolute; inset:0;
+    pointer-events:none;
+    display:flex; flex-direction:column; justify-content:space-between;
+    padding: clamp(20px,4vw,44px);
+    transition: opacity 700ms ease;
+  }
+  .hero-ui.fading{ opacity:0; pointer-events:none; }
+  .hero-ui .row{ display:flex; justify-content:space-between; align-items:flex-start; }
+  .hero-tag{
+    font-family: var(--font-ui);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    color: var(--bone-dim);
+    font-weight:600;
+  }
+  .hero-triples{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    color: var(--gold);
+    text-align:right;
+  }
+  .hero-mid{
+    align-self:center;
+    text-align:center;
+  }
+  .move-cue{
+    font-family: var(--font-ui);
+    font-size: 11px;
+    letter-spacing: 0.38em;
+    color: var(--ash);
+  }
+  .move-cue .touch{ display:none; }
+  .move-sub{
+    margin-top:10px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    color: var(--ash);
+    opacity: 0.6;
+  }
+  .move-sub .touch{ display:none; }
+  .scroll-cue{
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+    font-family: var(--font-ui);
+    font-size: 10px;
+    letter-spacing: 0.34em;
+    color: var(--ash);
+  }
+  .scroll-cue .stem{
+    width:1px; height:34px;
+    background: linear-gradient(to bottom, var(--ash), transparent);
+    animation: stemPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes stemPulse{ 0%,100%{ opacity:0.3; } 50%{ opacity:1; } }
+
+  .hero-text{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
+    opacity:0;
+    pointer-events:none;
+  }
+  .hero-text .chapter-tag{
+    font-family: var(--font-ui);
+    font-size: 12px;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    margin-bottom: 22px;
+  }
+  .hero-text h1{
+    font-family: var(--font-display);
+    font-weight:400;
+    font-size: clamp(3.6rem, 13vw, 9.5rem);
+    letter-spacing: 0.01em;
+    color: var(--bone);
+  }
+  .hero-text .meta-line{
+    margin-top: 22px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    color: var(--bone-dim);
+  }
+
+  /* ---------- section scaffolding ---------- */
+  section{ position:relative; }
+  .section-pad{ padding: clamp(90px,14vh,160px) 0; }
+  .section-head{
+    display:flex; align-items:baseline; justify-content:space-between;
+    gap:24px; flex-wrap:wrap;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 64px;
+  }
+  .section-head h2{
+    font-family: var(--font-display);
+    font-weight:400;
+    font-size: clamp(2rem, 4.4vw, 3.4rem);
+  }
+  .section-head .idx{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ash);
+    letter-spacing: 0.1em;
+  }
+
+  /* ---------- plates (one-product story) ---------- */
+  .plate{
+    position:relative;
+    width:100%;
+    aspect-ratio: 16/10;
+    border: 1px solid var(--line);
+    background:
+      linear-gradient(160deg, rgba(236,228,211,0.05), transparent 60%),
+      repeating-linear-gradient(115deg, rgba(236,228,211,0.025) 0 2px, transparent 2px 4px),
+      radial-gradient(ellipse at 30% 20%, rgba(182,138,69,0.07), transparent 55%),
+      linear-gradient(180deg, #171310, #0c0a07);
+    overflow:hidden;
+    display:flex; flex-direction:column; justify-content:space-between;
+    padding: 22px 26px;
+    margin-bottom: 20px;
+  }
+  .plate .p-idx{ font-family: var(--font-mono); font-size:11px; letter-spacing:0.18em; color: var(--bone-dim); }
+  .plate .p-ph{
+    align-self:center; margin:auto;
+    font-family: var(--font-ui); font-size: 11px; letter-spacing:0.22em;
+    color: var(--ash); text-align:center; text-transform:uppercase;
+    border: 1px dashed var(--line-strong);
+    padding: 10px 18px;
+  }
+  .plate .p-cap{
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(0.95rem, 1.6vw, 1.3rem);
+    color: var(--bone-dim);
+  }
+  .plate-grid{ display:grid; gap: 20px; }
+
+  .product-row{
+    display:grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: clamp(28px,5vw,72px);
+    align-items:start;
+  }
+  @media (max-width: 860px){ .product-row{ grid-template-columns:1fr; } }
+
+  .product-title{
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+  }
+  .product-sub{
+    font-family: var(--font-ui);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    margin-top: 10px;
+  }
+  .product-desc{
+    margin-top: 28px;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    line-height:1.7;
+    color: var(--bone-dim);
+    max-width: 56ch;
+  }
+  .spec-list{
+    margin-top: 32px;
+    display:flex; flex-direction:column; gap:10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--bone-dim);
+    letter-spacing:0.04em;
+  }
+  .spec-list .row{ display:flex; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:10px; }
+  .spec-list .row span:first-child{ color: var(--ash); letter-spacing:0.12em; }
+
+  .purchase-card{
+    border: 1px solid var(--line-strong);
+    padding: 30px;
+    background: var(--surface);
+  }
+  .purchase-card .price{
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+  }
+  .purchase-card .edition{
+    margin-top:4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing:0.18em;
+    color: var(--gold);
+  }
+  .size-row{ display:flex; gap:10px; margin-top:26px; flex-wrap:wrap; }
+  .size-pill{
+    border:1px solid var(--line-strong);
+    padding: 10px 16px;
+    font-family: var(--font-ui);
+    font-size:12px;
+    letter-spacing:0.08em;
+    color: var(--bone-dim);
+    transition: all 160ms ease;
+  }
+  .size-pill:hover{ border-color: var(--gold); color: var(--bone); }
+  .size-pill.active{ background: var(--bone); color: var(--void-deep); border-color: var(--bone); }
+  .cta-btn{
+    margin-top: 26px;
+    width:100%;
+    padding: 18px;
+    border: 1px solid var(--bone);
+    font-family: var(--font-ui);
+    font-size: 12px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--bone);
+    transition: all 220ms ease;
+    position:relative;
+    overflow:hidden;
+  }
+  .cta-btn:hover{ background: var(--bone); color: var(--void-deep); }
+  .cta-note{
+    margin-top:16px;
+    font-family: var(--font-mono);
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    color: var(--ash);
+    text-align:center;
+  }
+  /* ---------- checkout overlay ----------
+     A real checkout screen — order summary, shipping form, and a clearly
+     marked spot for Stripe's own payment form once that's wired in.
+     Nothing here submits anywhere yet; the "complete purchase" step says
+     so plainly rather than pretending to process a payment. */
+  #checkout-overlay{
+    position: fixed; inset:0; z-index: 130;
+    background: rgba(5,4,3,0.94);
+    display:flex; align-items:flex-start; justify-content:center;
+    padding: clamp(20px,4vh,60px) 16px;
+    overflow-y: auto;
+    opacity:0; pointer-events:none;
+    transition: opacity 320ms ease;
+  }
+  #checkout-overlay.open{ opacity:1; pointer-events:auto; }
+  .checkout-panel{
+    width:100%; max-width:560px;
+    background: var(--surface);
+    border:1px solid var(--line-strong);
+    transform: translateY(16px);
+    transition: transform 320ms ease;
+  }
+  #checkout-overlay.open .checkout-panel{ transform:translateY(0); }
+  .checkout-head{
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 22px 26px;
+    border-bottom:1px solid var(--line);
+  }
+  .checkout-head .co-title{ font-family:var(--font-display); font-size:1.4rem; }
+  .checkout-close{
+    width:32px; height:32px;
+    border:1px solid var(--line-strong);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--bone-dim); font-size:15px;
+    transition: all 160ms ease;
+  }
+  .checkout-close:hover{ color:var(--bone); border-color:var(--gold); }
+  .checkout-body{ padding:26px; display:flex; flex-direction:column; gap:26px; }
+  .co-summary{
+    display:flex; gap:16px; align-items:center;
+    padding-bottom:20px; border-bottom:1px solid var(--line);
+  }
+  .co-thumb{
+    width:60px; height:74px; flex-shrink:0;
+    border:1px solid var(--line-strong);
+    background:
+      linear-gradient(160deg, rgba(236,228,211,0.05), transparent 60%),
+      linear-gradient(180deg,#171310,#0c0a07);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-mono); font-size:8px; letter-spacing:0.05em;
+    color:var(--ash); text-align:center; padding:4px;
+  }
+  .co-summary-info{ flex:1; min-width:0; }
+  .co-summary-info .co-name{ font-family:var(--font-display); font-size:1.05rem; }
+  .co-summary-info .co-meta{ font-family:var(--font-mono); font-size:11px; color:var(--ash); letter-spacing:0.08em; margin-top:4px; }
+  .co-summary-price{ font-family:var(--font-mono); font-size:1rem; white-space:nowrap; }
+  .co-section-label{
+    font-family: var(--font-ui); font-size:11px; letter-spacing:0.24em;
+    text-transform:uppercase; color:var(--gold); margin-bottom:14px;
+  }
+  .co-fields{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .co-fields .full{ grid-column:1/3; }
+  .co-field label{ display:block; font-family:var(--font-mono); font-size:10px; letter-spacing:0.1em; color:var(--ash); margin-bottom:6px; }
+  .co-field input{
+    width:100%; background:var(--void); border:1px solid var(--line-strong);
+    color:var(--bone); font-family:var(--font-ui); font-size:13px;
+    padding:11px 12px;
+  }
+  .co-field input:focus{ outline:none; border-color:var(--gold); }
+  .co-payment-placeholder{
+    border:1px dashed var(--line-strong); padding:24px; text-align:center;
+    font-family:var(--font-ui); font-size:11px; letter-spacing:0.16em;
+    color:var(--ash); text-transform:uppercase;
+  }
+  .co-payment-note{ margin-top:10px; font-family:var(--font-mono); font-size:10px; letter-spacing:0.04em; color:var(--ash); text-align:center; }
+  .co-totals{ display:flex; flex-direction:column; gap:8px; font-family:var(--font-mono); font-size:12px; }
+  .co-totals .row{ display:flex; justify-content:space-between; color:var(--bone-dim); }
+  .co-totals .row.total{ color:var(--bone); font-size:14px; padding-top:10px; border-top:1px solid var(--line); }
+  .co-submit-note{
+    opacity:0; max-height:0; overflow:hidden;
+    transition:all 320ms ease;
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:0.04em;
+    color:var(--gold-bright); text-align:center;
+  }
+  .co-submit-note.show{ opacity:1; max-height:60px; margin-top:14px; }
+
+  /* ---------- scripture ---------- */
+  .scripture-section{
+    min-height: 82vh;
+    display:flex; align-items:center; justify-content:center;
+    text-align:center;
+    padding: clamp(80px,16vh,180px) clamp(20px,6vw,80px);
+    background: radial-gradient(ellipse at 50% 50%, rgba(182,138,69,0.035), transparent 60%);
+  }
+  .scripture-inner .eyebrow{ margin-bottom: 40px; }
+  .scripture-verse{
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(1.6rem, 4.2vw, 2.8rem);
+    color: var(--bone-dim);
+    max-width: 18ch;
+    margin: 0 auto;
+    line-height:1.4;
+  }
+  .scripture-ref{
+    margin-top:36px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+  }
+  .scripture-note{
+    margin-top:52px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--ash);
+    opacity:0.7;
+  }
+
+  /* ---------- music ---------- */
+  .player{
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    padding: clamp(24px,4vw,44px);
+    display:grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 28px;
+    align-items:center;
+  }
+  @media (max-width:700px){ .player{ grid-template-columns: auto 1fr; } .player .waveform{ grid-column: 1/3; } }
+  .play-btn{
+    width:58px; height:58px;
+    border-radius:50%;
+    border:1px solid var(--bone);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    transition: all 200ms ease;
+  }
+  .play-btn:hover{ background: var(--bone); }
+  .play-btn:hover svg{ fill:var(--void-deep); stroke:var(--void-deep); }
+  .play-btn svg{ fill:var(--bone); stroke:var(--bone); transition: all 200ms ease; }
+  .track-meta{ display:flex; flex-direction:column; gap:14px; min-width:0; }
+  .track-name{ font-family: var(--font-mono); font-size:13px; letter-spacing:0.06em; color:var(--bone); display:flex; gap:14px; }
+  .track-name .t-time{ color: var(--ash); }
+  .track-bar{
+    position:relative;
+    height: 34px;
+    display:flex; align-items:center;
+  }
+  .track-bar .track-line{ position:absolute; left:0; right:0; height:1px; background:var(--line-strong); }
+  .track-bar .track-fill{ position:absolute; left:0; top:50%; transform:translateY(-50%); height:1px; background:var(--gold); width:0%; }
+  .track-bar .track-dot{ position:absolute; top:50%; width:7px; height:7px; border-radius:50%; background:var(--bone); transform:translate(-50%,-50%); left:0%; }
+  .track-bar .triple-mark{ position:absolute; top:50%; transform:translate(-50%,-50%); font-family:var(--font-mono); font-size:9px; color:var(--ash); letter-spacing:0.06em; }
+  .waveform{ display:flex; align-items:flex-end; gap:3px; height:40px; }
+  .waveform i{ width:3px; background: var(--bone-dim); opacity:0.55; border-radius:1px; transform-origin:bottom; }
+  .enable-note{ margin-top:18px; font-family:var(--font-mono); font-size:10.5px; letter-spacing:0.1em; color:var(--ash); text-align:center; }
+
+  /* ---------- film ---------- */
+  .film-plate{
+    position:relative;
+    width:100%;
+    aspect-ratio: 21/11;
+    border:1px solid var(--line);
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(182,138,69,0.06), transparent 60%),
+      linear-gradient(180deg,#161209,#070604 75%);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  .film-plate::after{
+    content:""; position:absolute; inset:0;
+    box-shadow: inset 0 0 140px 30px rgba(0,0,0,0.65);
+    pointer-events:none;
+  }
+  .film-play{
+    width:74px; height:74px; border-radius:50%;
+    border:1px solid var(--bone);
+    display:flex; align-items:center; justify-content:center;
+    background: rgba(11,9,6,0.3);
+    position:relative; z-index:2;
+    transition: all 220ms ease;
+  }
+  .film-play:hover{ background: var(--bone); }
+  .film-play:hover svg{ fill:var(--void-deep); }
+  .film-meta{
+    position:absolute; left:24px; bottom:20px; z-index:2;
+    font-family: var(--font-mono); font-size:11px; letter-spacing:0.16em; color:var(--bone-dim);
+  }
+  .film-dur{
+    position:absolute; right:24px; bottom:20px; z-index:2;
+    font-family: var(--font-mono); font-size:11px; letter-spacing:0.1em; color:var(--ash);
+  }
+  .film-note{
+    margin-top:18px;
+    font-family: var(--font-mono); font-size:11px; letter-spacing:0.08em; color:var(--gold-bright);
+    max-height:0; overflow:hidden; opacity:0;
+    transition: all 400ms ease;
+  }
+  .film-note.show{ max-height:60px; opacity:1; margin-top:18px; }
+
+  /* ---------- photography filmstrip ---------- */
+  .filmstrip{
+    display:flex; gap:16px;
+    overflow-x:auto;
+    padding-bottom: 14px;
+    scroll-snap-type: x proximity;
+  }
+  .filmstrip::-webkit-scrollbar{ height:4px; }
+  .filmstrip::-webkit-scrollbar-thumb{ background: var(--line-strong); }
+  .frame{
+    scroll-snap-align:start;
+    flex: 0 0 clamp(240px, 34vw, 360px);
+    aspect-ratio: 3/4;
+    border:1px solid var(--line);
+    background:
+      linear-gradient(155deg, rgba(236,228,211,0.05), transparent 55%),
+      linear-gradient(200deg,#181310,#080705);
+    display:flex; flex-direction:column; justify-content:space-between;
+    padding:18px 20px;
+  }
+  .frame .f-idx{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:0.14em; color:var(--bone-dim); }
+  .frame .f-tag{ font-family: var(--font-ui); font-size:11px; letter-spacing:0.28em; color:var(--gold); align-self:center; margin:auto; }
+  .frame .f-cap{ font-family: var(--font-display); font-style:italic; font-size:0.98rem; color:var(--bone-dim); }
+
+  /* ---------- chapters ---------- */
+  .chapter-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 26px 0;
+    border-bottom: 1px solid var(--line);
+    gap: 20px;
+  }
+  .chapter-row .c-name{ font-family: var(--font-display); font-size: clamp(1.3rem,2.6vw,1.9rem); }
+  .chapter-row .c-status{ font-family: var(--font-mono); font-size:11px; letter-spacing:0.2em; display:flex; align-items:center; gap:10px; }
+  .dot{ width:7px; height:7px; border-radius:50%; background: var(--gold-bright); box-shadow:0 0 8px var(--gold-bright); }
+  .chapter-row.sealed{ opacity:0.4; }
+  .chapter-row.sealed .dot{ background: var(--ash); box-shadow:none; }
+  .chapters-note{ margin-top:26px; font-family:var(--font-display); font-style:italic; color:var(--bone-dim); font-size:1.02rem; max-width:56ch; }
+
+  /* ---------- footer ---------- */
+  footer{
+    border-top: 1px solid var(--line);
+    padding: 70px 0 40px;
+  }
+  .follow-row{
+    display:flex; flex-wrap:wrap; gap: 24px 40px;
+    margin-top: 26px;
+  }
+  .follow-row a{
+    font-family: var(--font-ui);
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--bone-dim);
+    border-bottom: 1px solid transparent;
+    padding-bottom:4px;
+    transition: all 160ms ease;
+  }
+  .follow-row a:hover{ color: var(--bone); border-color: var(--gold); }
+
+  .foot-bottom{
+    margin-top: 56px;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    color: var(--ash);
+  }
+
+  /* ---------- sound dot control ---------- */
+  #sound-mini{
+    position:fixed; right:20px; bottom:20px; z-index:60;
+    display:flex; align-items:center; gap:8px;
+    font-family: var(--font-mono); font-size:10px; letter-spacing:0.16em;
+    color: var(--ash);
+    background: rgba(11,9,6,0.7);
+    border: 1px solid var(--line);
+    padding: 8px 12px;
+    opacity:0; pointer-events:none;
+    transition: opacity 400ms ease;
+  }
+  #sound-mini.visible{ opacity:1; pointer-events:auto; cursor:pointer; }
+  #sound-mini .m-dot{ width:6px; height:6px; border-radius:50%; background:var(--ash); }
+  #sound-mini.on .m-dot{ background: var(--gold-bright); box-shadow:0 0 6px var(--gold-bright); }
+
+  @media (max-width:760px){
+    .move-cue .mouse{ display:none; }
+    .move-cue .touch{ display:inline; }
+    .move-sub .mouse{ display:none; }
+    .move-sub .touch{ display:inline; }
+  }
+</style>
+
+<!-- ============================================================= -->
+
+<div id="preloader">
+  <div class="digits">
+    <span data-n="0">111</span>
+    <span data-n="1">444</span>
+    <span data-n="2">777</span>
+  </div>
+</div>
+
+<div id="transition-veil"></div>
+
+<div id="sound-mini" role="button" aria-label="Toggle sound">
+  <span class="m-dot"></span><span id="sound-mini-label">SOUND OFF</span>
+</div>
+
+<!-- ============================================================= -->
+<!-- HERO -->
+<div class="hero-wrap" id="hero-wrap">
+  <div class="hero-stage" id="hero-stage">
+    <canvas id="angel-canvas"></canvas>
+
+    <div class="hero-ui" id="hero-ui">
+      <div class="row">
+        <div class="hero-tag">CHAPTER 001</div>
+        <div class="hero-triples mono">111 / 444 / 777</div>
+      </div>
+      <div class="hero-mid">
+        <div class="move-cue">
+          <span class="mouse">MOVE TO BE SEEN</span>
+          <span class="touch">TOUCH TO BE SEEN</span>
+        </div>
+        <div class="move-sub">
+          <span class="mouse">DRAG TO TURN — CLICK TO ENTER</span>
+          <span class="touch">DRAG TO TURN — TAP TO ENTER</span>
+        </div>
+      </div>
+      <div class="row" style="align-items:flex-end;">
+        <div class="scroll-cue"><span>SCROLL</span><span class="stem"></span></div>
+        <div class="hero-tag" style="text-align:right;">MMXXVI</div>
+      </div>
+    </div>
+
+    <div class="hero-text" id="hero-text">
+      <div class="chapter-tag mono">CHAPTER 001</div>
+      <h1 class="display">REVELATION</h1>
+      <div class="meta-line">CHAPTER 001 / PIECE 001 / MMXXVI</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- ONE-PRODUCT STORY -->
+<section class="section-pad" id="product">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>THE ARTIFACT</h2>
+      <div class="idx mono">01 — ARCHIVE</div>
+    </div>
+
+    <div class="plate-grid">
+      <div class="plate reveal">
+        <div class="p-idx">01 — CAMPAIGN</div>
+        <div class="p-ph">CAMPAIGN IMAGE — PLACEHOLDER</div>
+        <div class="p-cap">The eye that does not sleep.</div>
+      </div>
+      <div class="plate reveal">
+        <div class="p-idx">02 — PIECE 001 / FRONT</div>
+        <div class="p-ph">GARMENT IMAGE — FRONT — PLACEHOLDER</div>
+        <div class="p-cap">Revelation, worn.</div>
+      </div>
+      <div class="plate reveal">
+        <div class="p-idx">03 — DETAIL / FABRIC</div>
+        <div class="p-ph">FABRIC DETAIL — PLACEHOLDER</div>
+        <div class="p-cap">Heavyweight cotton. Garment-dyed. Bone.</div>
+      </div>
+      <div class="plate reveal">
+        <div class="p-idx">04 — DETAIL / GRAPHIC</div>
+        <div class="p-ph">GRAPHIC DETAIL — PLACEHOLDER</div>
+        <div class="p-cap">Six wings. One eye. The mark of the first chapter.</div>
+      </div>
+      <div class="plate reveal">
+        <div class="p-idx">05 — PIECE 001 / BACK</div>
+        <div class="p-ph">GARMENT IMAGE — BACK — PLACEHOLDER</div>
+        <div class="p-cap">111 stitched into the collar.</div>
+      </div>
+      <div class="plate reveal">
+        <div class="p-idx">06 — EDITORIAL</div>
+        <div class="p-ph">MODEL STUDY — PLACEHOLDER</div>
+        <div class="p-cap">Worn in the open. Nothing hidden.</div>
+      </div>
+      <div class="plate reveal">
+        <div class="p-idx">07 — ARCHIVE / CLOSE</div>
+        <div class="p-ph">CLOSING IMAGE — PLACEHOLDER</div>
+        <div class="p-cap">Chapter 001 closes here. The next is sealed.</div>
+      </div>
+    </div>
+
+    <div class="product-row reveal" style="margin-top:80px;">
+      <div>
+        <div class="product-title">PIECE 001</div>
+        <div class="product-sub mono">CHAPTER 001 — REVELATION</div>
+        <p class="product-desc">A heavyweight garment-dyed tee, built as the first physical artifact of the archive. Bone cotton, oversized cut, single graphic placement referencing the six-winged form and its central eye. Edition stitched with 111 — the number of this release, and no more. Printed. Boxed. Sealed. Once it's gone, the chapter closes.</p>
+        <div class="spec-list">
+          <div class="row"><span>MATERIAL</span><span>100% HEAVYWEIGHT COTTON, 280GSM</span></div>
+          <div class="row"><span>FINISH</span><span>GARMENT-DYED</span></div>
+          <div class="row"><span>FIT</span><span>OVERSIZED</span></div>
+          <div class="row"><span>EDITION</span><span>111 UNITS</span></div>
+          <div class="row"><span>ORIGIN</span><span>CHAPTER 001 — MMXXVI</span></div>
+        </div>
+      </div>
+
+      <div class="purchase-card">
+        <div class="price mono">$148 <span style="font-size:0.9rem; color:var(--ash);">USD</span></div>
+        <div class="edition">EDITION OF 111 — NO RESTOCK</div>
+        <div class="size-row" id="size-row">
+          <div class="size-pill" data-size="XS">XS</div>
+          <div class="size-pill active" data-size="S">S</div>
+          <div class="size-pill" data-size="M">M</div>
+          <div class="size-pill" data-size="L">L</div>
+          <div class="size-pill" data-size="XL">XL</div>
+        </div>
+        <button class="cta-btn" id="add-cart-btn">ADD PIECE 001 TO CART</button>
+        <div class="cta-note">SHIPS WORLDWIDE. NO RESTOCK. NO SECOND RUN.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================= -->
+<!-- SCRIPTURE -->
+<section class="scripture-section" id="scripture">
+  <div class="scripture-inner reveal">
+    <div class="eyebrow">SCRIPTURE</div>
+    <div class="scripture-verse">[ VERSE PLACEHOLDER ]</div>
+    <div class="scripture-ref mono">— BOOK X : X —</div>
+    <div class="scripture-note mono">TEXT WITHHELD PENDING FINAL ARTWORK</div>
+  </div>
+</section>
+
+<!-- ============================================================= -->
+<!-- MUSIC -->
+<section class="section-pad" id="music">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>THE CHAPTER HAS A SOUND</h2>
+      <div class="idx mono">02 — SOUND</div>
+    </div>
+
+    <div class="player reveal">
+      <button class="play-btn" id="play-btn" aria-label="Play">
+        <svg id="play-icon" width="16" height="18" viewBox="0 0 16 18"><path d="M0 0 L16 9 L0 18 Z"/></svg>
+        <svg id="pause-icon" width="16" height="18" viewBox="0 0 16 18" style="display:none;">
+          <rect x="0" y="0" width="5" height="18"/><rect x="11" y="0" width="5" height="18"/>
+        </svg>
+      </button>
+
+      <div class="track-meta">
+        <div class="track-name"><span>01 / SIX WINGS</span><span class="t-time mono" id="t-elapsed">00:00</span><span class="t-time mono" id="t-total">02:41</span></div>
+        <div class="track-bar" id="track-bar">
+          <div class="track-line"></div>
+          <div class="track-fill" id="track-fill"></div>
+          <div class="track-dot" id="track-dot"></div>
+          <div class="triple-mark" style="left:11%;">111</div>
+          <div class="triple-mark" style="left:44%;">444</div>
+          <div class="triple-mark" style="left:77%;">777</div>
+        </div>
+      </div>
+
+      <div class="waveform" id="waveform"></div>
+    </div>
+    <div class="enable-note">TAP TO ENABLE SOUND — NOTHING PLAYS UNTIL YOU DO.</div>
+  </div>
+</section>
+
+<!-- ============================================================= -->
+<!-- FILM -->
+<section class="section-pad" id="film">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>CHAPTER 001 — FILM</h2>
+      <div class="idx mono">03 — FILM</div>
+    </div>
+
+    <div class="film-plate reveal">
+      <button class="film-play" id="film-play" aria-label="Watch">
+        <svg width="18" height="20" viewBox="0 0 16 18" style="fill:var(--bone);"><path d="M0 0 L16 9 L0 18 Z"/></svg>
+      </button>
+      <div class="film-meta mono">WATCH +</div>
+      <div class="film-dur mono">01:47</div>
+    </div>
+    <div class="film-note" id="film-note">THE FILM FOR THIS CHAPTER IS STILL BEING CUT. IT WILL ARRIVE BEFORE CHAPTER 002.</div>
+  </div>
+</section>
+
+<!-- ============================================================= -->
+<!-- PHOTOGRAPHY -->
+<section class="section-pad" id="photography">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>THE ARCHIVE, IN LIGHT</h2>
+      <div class="idx mono">04 — PHOTOGRAPHY</div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="filmstrip reveal" id="filmstrip"></div>
+  </div>
+</section>
+
+<!-- ============================================================= -->
+<!-- CHAPTERS -->
+<section class="section-pad" id="chapters">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>CHAPTERS</h2>
+      <div class="idx mono">05 — INDEX</div>
+    </div>
+
+    <div class="chapter-row reveal">
+      <div class="c-name">CHAPTER 001 — REVELATION</div>
+      <div class="c-status"><span class="dot"></span>AVAILABLE</div>
+    </div>
+    <div class="chapter-row sealed reveal">
+      <div class="c-name">CHAPTER 002</div>
+      <div class="c-status"><span class="dot"></span>SEALED</div>
+    </div>
+    <p class="chapters-note">Each chapter carries its own garment, scripture, sound, and film. Only one has been opened.</p>
+  </div>
+</section>
+
+<!-- ============================================================= -->
+<footer>
+  <div class="wrap">
+    <div class="eyebrow">FOLLOW THE ARCHIVE</div>
+    <div class="follow-row reveal">
+      <a href="#" onclick="return false">INSTAGRAM</a>
+      <a href="#" onclick="return false">TIKTOK</a>
+      <a href="#" onclick="return false">YOUTUBE</a>
+      <a href="#" onclick="return false">SPOTIFY</a>
+      <a href="#" onclick="return false">APPLE MUSIC</a>
+      <a href="#" onclick="return false">SOUNDCLOUD</a>
+    </div>
+
+    <div class="foot-bottom">
+      <span>© MMXXVI — CHAPTER 001 / PIECE 001</span>
+      <span>111 · 444 · 777</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================= -->
+<!-- CHECKOUT -->
+<div id="checkout-overlay" role="dialog" aria-modal="true" aria-label="Checkout">
+  <div class="checkout-panel">
+    <div class="checkout-head">
+      <div class="co-title display">Checkout</div>
+      <button class="checkout-close" id="checkout-close" aria-label="Close checkout">✕</button>
+    </div>
+    <div class="checkout-body">
+      <div class="co-summary">
+        <div class="co-thumb">PIECE 001</div>
+        <div class="co-summary-info">
+          <div class="co-name">PIECE 001 — Revelation</div>
+          <div class="co-meta mono" id="co-size-label">SIZE S · EDITION OF 111</div>
+        </div>
+        <div class="co-summary-price mono">$148</div>
+      </div>
+
+      <div>
+        <div class="co-section-label">Contact &amp; Shipping</div>
+        <div class="co-fields">
+          <div class="co-field full"><label for="co-email">Email</label><input id="co-email" type="email" placeholder="you@email.com" autocomplete="email"></div>
+          <div class="co-field full"><label for="co-name">Full Name</label><input id="co-name" type="text" placeholder="First and last name" autocomplete="name"></div>
+          <div class="co-field full"><label for="co-address">Address</label><input id="co-address" type="text" placeholder="Street address" autocomplete="address-line1"></div>
+          <div class="co-field"><label for="co-city">City</label><input id="co-city" type="text" autocomplete="address-level2"></div>
+          <div class="co-field"><label for="co-region">State / Region</label><input id="co-region" type="text" autocomplete="address-level1"></div>
+          <div class="co-field"><label for="co-postal">Postal Code</label><input id="co-postal" type="text" autocomplete="postal-code"></div>
+          <div class="co-field"><label for="co-country">Country</label><input id="co-country" type="text" placeholder="United States" autocomplete="country-name"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="co-section-label">Payment</div>
+        <div class="co-payment-placeholder">[ SECURE PAYMENT FORM MOUNTS HERE — STRIPE ]</div>
+        <div class="co-payment-note">Card details are never seen or stored by GLORIYAH — Stripe handles payment directly.</div>
+      </div>
+
+      <div class="co-totals">
+        <div class="row"><span>Subtotal</span><span>$148.00</span></div>
+        <div class="row"><span>Shipping</span><span>Calculated at checkout</span></div>
+        <div class="row total"><span>Total</span><span>$148.00 USD</span></div>
+      </div>
+
+      <div>
+        <button class="cta-btn" id="checkout-submit">COMPLETE PURCHASE</button>
+        <div class="co-submit-note" id="checkout-note">PAYMENT PROCESSING ISN'T CONNECTED YET — THIS IS A PREVIEW OF THE CHECKOUT FLOW.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<script>
+(function(){
+  "use strict";
+
+  // the browser can restore a previous scroll position on reload/back —
+  // combined with the pre-reveal scroll lock below, that stranded people
+  // mid-page with no visible hero and no way to scroll either direction.
+  // Every fresh load starts at the top, full stop.
+  if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+  window.scrollTo(0, 0);
+
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var isMobile = window.matchMedia('(max-width:760px)').matches || ('ontouchstart' in window);
+  var LOD = isMobile ? 0.68 : 1.0;
+
+  /* ---------------- preloader ---------------- */
+  var preloader = document.getElementById('preloader');
+  var digits = preloader.querySelectorAll('.digits span');
+  var di = 0;
+  var digitTimer = setInterval(function(){
+    digits.forEach(function(d){ d.classList.remove('on'); });
+    digits[di % digits.length].classList.add('on');
+    di++;
+  }, 260);
+  window.addEventListener('load', function(){
+    setTimeout(function(){
+      clearInterval(digitTimer);
+      preloader.classList.add('hidden');
+      setTimeout(function(){ preloader.remove(); }, 950);
+    }, 900);
+  });
+
+  /* ================================================================
+     REVEAL — the eye IS the page until you act on it. Scrolling is
+     locked; only a deliberate tap disperses it, once, into the artifact
+     below. This is a single held moment, not something scrubbed by
+     scroll position.
+     ================================================================ */
+  var heroUi = document.getElementById('hero-ui');
+  var heroText = document.getElementById('hero-text');
+  var revealed = false;
+
+  // nothing scrolls until the being has been entered
+  var htmlEl = document.documentElement;
+  var prevHtmlOverflow = htmlEl.style.overflow;
+  var prevBodyOverflow = document.body.style.overflow;
+  htmlEl.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
+
+  // some hosting contexts restore a remembered scroll position after this
+  // script has already run, landing visitors deep in the page with no
+  // visible hero at all. Whatever the source, it isn't a legitimate user
+  // scroll — scrolling is locked pre-reveal, so any scroll that happens
+  // anyway before the visitor has actually entered gets snapped straight
+  // back to the top, immediately and repeatedly, no exceptions.
+  function enforceTop(){
+    if (!revealed && window.scrollY !== 0) window.scrollTo(0, 0);
+  }
+  window.addEventListener('scroll', enforceTop, {passive:true});
+  [0, 50, 150, 300, 600, 1000, 1600, 2400].forEach(function(ms){
+    setTimeout(enforceTop, ms);
+  });
+
+  function easeInOutCubic(p){
+    return p < 0.5 ? 4*p*p*p : 1 - Math.pow(-2*p+2, 3)/2;
+  }
+
+  // a deliberate cut: fade to black, jump while hidden (letting the
+  // artifact's own sections quietly unveil themselves behind the veil),
+  // then fade up onto the fully-arrived, already-unveiling page
+  var veil = document.getElementById('transition-veil');
+  function veilCutTo(targetY){
+    if (reduceMotion) {
+      window.scrollTo(0, targetY);
+      htmlEl.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+      return;
+    }
+    veil.classList.add('on');
+    setTimeout(function(){
+      window.scrollTo(0, targetY);
+      htmlEl.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+      // hold black just long enough for the arriving section's own
+      // reveal transitions to finish underneath, so lifting the veil
+      // shows a fully composed scene, not something still fading in
+      setTimeout(function(){ veil.classList.remove('on'); }, 1300);
+    }, 900);
+  }
+
+  function triggerReveal(){
+    if (revealed) return;
+    revealed = true;
+    heroUi.classList.add('fading');
+
+    var start = performance.now();
+    // slow and deliberate — this is the one moment the whole site turns on
+    var duration = reduceMotion ? 500 : 5200;
+    var holdMs = reduceMotion ? 0 : 1400;
+
+    (function anim(now){
+      now = now || performance.now();
+      var raw = Math.min(1, (now - start) / duration);
+      var p = easeInOutCubic(raw);
+      if (window.__setAngelScatter) window.__setAngelScatter(p);
+      var textP = Math.max(0, Math.min(1, (p - 0.5) / 0.42));
+      heroText.style.opacity = String(textP);
+      heroText.style.transform = 'translateY(' + (14*(1-textP)) + 'px) scale(' + (0.94+0.06*textP) + ')';
+      if (raw < 1) {
+        requestAnimationFrame(anim);
+      } else {
+        // hold the fully-revealed title for a beat before carrying the
+        // visitor on — the pause is the drama
+        setTimeout(function(){
+          var product = document.getElementById('product');
+          if (product) veilCutTo(product.getBoundingClientRect().top + window.scrollY);
+        }, holdMs);
+      }
+    })();
+  }
+
+  // guaranteed fallback: entering the site must never depend on the
+  // particle system succeeding. If WebGL fails outright, or anything in
+  // that few hundred lines of procedural geometry throws, this still
+  // lets a visitor tap their way in — wired before any of that risky
+  // code runs, so nothing downstream of it can prevent this from firing.
+  var heroStageFallback = document.getElementById('hero-stage');
+  if (heroStageFallback) {
+    heroStageFallback.addEventListener('click', function(){ triggerReveal(); });
+  }
+
+  /* ================================================================
+     PARTICLE ANGEL — raw WebGL point-cloud sculpture
+     ================================================================ */
+  var canvas = document.getElementById('angel-canvas');
+  var gl = null;
+  try {
+    gl = canvas.getContext('webgl', { antialias:false, alpha:false, premultipliedAlpha:false }) ||
+         canvas.getContext('experimental-webgl');
+  } catch (eGl) { gl = null; }
+
+  try {
+  if (gl) {
+    var VERT = [
+      'precision highp float;',
+      'attribute vec3 aPos;',
+      'attribute vec3 aScatter;',
+      'attribute float aGroup;',
+      'attribute float aColorMix;',
+      'attribute float aSize;',
+      '',
+      'uniform float uTime;',
+      'uniform vec2 uGazeOffset;',
+      'uniform vec2 uAngelRot;',
+      'uniform vec4 uRingAngles;',
+      'uniform float uScatter;',
+      'uniform float uBlink;',
+      'uniform vec3 uRepel;',
+      'uniform float uRepelStrength;',
+      'uniform float uAspect;',
+      'uniform float uViewScale;',
+      'uniform float uFocal;',
+      'uniform float uPixelRatio;',
+      'uniform vec2 uPointRange;',
+      'uniform float uReduced;',
+      'uniform float uClickTime;',
+      'uniform vec3 uClickPos;',
+      '',
+      'varying float vAlpha;',
+      'varying float vColorMix;',
+      '',
+      'mat2 rot(float a){ float c=cos(a), s=sin(a); return mat2(c,-s,s,c); }',
+      '',
+      'void main(){',
+      '  vec3 p = aPos;',
+      '  bool isWing = aGroup >= 10.0 && aGroup < 20.0;',
+      '  bool isRing = aGroup >= 20.0 && aGroup < 30.0;',
+      '  bool isDust = aGroup >= 30.0;',
+      '  bool isBody = aGroup >= 10.0;',
+      '  bool isEyelid = aGroup > 0.5 && aGroup < 2.5;',
+      '  bool isGaze = aGroup > 3.5 && aGroup < 4.5;',
+      '  bool isBlinkAlpha = aGroup < 0.5 || isGaze;',
+      '',
+      '  float seed = aSize*3.7 + aColorMix*11.0;',
+      '  float breathing = uReduced > 0.5 ? 0.0 : sin(uTime*0.35 + seed) * 0.02;',
+      '  if (isWing || isRing) { p += aScatter * breathing; }',
+      '  if (isDust && uReduced < 0.5) {',
+      '    p.x += sin(uTime*0.11 + seed) * 0.5;',
+      '    p.y += cos(uTime*0.08 + seed*1.3) * 0.42;',
+      '    p.z += sin(uTime*0.07 + seed*0.6) * 0.5;',
+      '  }',
+      '',
+      // wheels within wheels: each ring turns in its own plane, not just
+      // the same axis with a flipped sign — same-axis reversal can still
+      // look like the same spin once the rings are tilted, so each one
+      // here tumbles on a genuinely different axis
+      '  if (isRing) {',
+      '    float ringIdx = aGroup - 20.0;',
+      '    if (ringIdx < 0.5) { p.xz = rot(uRingAngles.x) * p.xz; }',
+      '    else if (ringIdx < 1.5) { p.yz = rot(uRingAngles.y) * p.yz; }',
+      '    else if (ringIdx < 2.5) { p.xy = rot(uRingAngles.z) * p.xy; }',
+      '    else { p.xz = rot(uRingAngles.w) * p.xz; }',
+      '  }',
+      '',
+      '  // the iris slides a little within the socket to imply a gaze — the',
+      '  // eye itself never rotates, so it always reads as a correct eye.',
+      '  if (isGaze) { p.xy += uGazeOffset; }',
+      '',
+      '  float coverage = uBlink;',
+      '  if (isEyelid) { p.y = mix(p.y, 0.0, coverage*0.94); }',
+      '',
+      '  float alphaMul = 1.0;',
+      '  if (isBlinkAlpha) {',
+      '    float ny = abs(p.y) / 0.5;',
+      '    float lidLine = 1.0 - coverage;',
+      '    alphaMul *= 1.0 - smoothstep(lidLine - 0.1, lidLine + 0.1, ny);',
+      '  }',
+      '',
+      '  vec3 toP = p - uRepel;',
+      '  float d = length(toP.xy);',
+      '  float falloff = uRepelStrength / (1.0 + d*d*2.4);',
+      '  vec3 pushDir = normalize(vec3(toP.xy + 0.0001, 0.55));',
+      '  p += pushDir * falloff;',
+      '',
+      '  float dtClick = uTime - uClickTime;',
+      '  if (dtClick >= 0.0 && dtClick < 1.5) {',
+      '    vec3 toC = p - uClickPos;',
+      '    float dc = length(toC);',
+      '    float wave = sin(dc*6.0 - dtClick*10.0) * exp(-dtClick*2.0) * exp(-dc*1.0);',
+      '    p += normalize(toC + 0.0001) * wave * 0.4;',
+      '  }',
+      '',
+      '  // only the body (wings, rings, dust) turns with the gaze/drag — the',
+      '  // eye is anchored, so spinning the being never distorts its shape.',
+      '  // every depth layer turns by the exact same amount, rigidly, or the',
+      '  // shorter covert feathers visibly detach from the primaries and',
+      '  // read as a duplicate "ghost" wing behind the real one.',
+      '  if (isBody) {',
+      '    p.xz = rot(uAngelRot.x) * p.xz;',
+      '    p.yz = rot(uAngelRot.y) * p.yz;',
+      '  }',
+      '',
+      // a small stagger, not a hard half-timeline gap — the eye still goes
+      // last, but as part of one continuous wave, not a separate second burst
+      '  float startThresh = isBlinkAlpha ? 0.16 : 0.0;',
+      '  float local = clamp((uScatter - startThresh) / (1.0 - startThresh), 0.0, 1.0);',
+      '  float eased = local * local * (3.0 - 2.0 * local);',
+      '  p += aScatter * eased * 3.4;',
+      '  alphaMul *= (1.0 - eased * 0.98);',
+      '',
+      '  vAlpha = alphaMul;',
+      '  vColorMix = aColorMix;',
+      '',
+      '  float persp = uFocal / (uFocal - p.z);',
+      '  float sx = p.x * uViewScale * persp;',
+      '  float sy = p.y * uViewScale * persp;',
+      '  if (uAspect >= 1.0) { sx /= uAspect; } else { sy *= uAspect; }',
+      '',
+      '  gl_Position = vec4(sx, sy, 0.0, 1.0);',
+      '  float ps = aSize * uPixelRatio * persp;',
+      '  gl_PointSize = clamp(ps, uPointRange.x, uPointRange.y);',
+      '}'
+    ].join('\n');
+
+    var FRAG = [
+      'precision highp float;',
+      'varying float vAlpha;',
+      'varying float vColorMix;',
+      'uniform vec3 uBone;',
+      'uniform vec3 uGold;',
+      'void main(){',
+      '  vec2 c = gl_PointCoord - 0.5;',
+      '  float d = length(c) * 2.0;',
+      // a small bright core so dense fills read as solid shapes, plus a
+      // thin soft halo on top for glow — pure soft falloff alone was
+      // dissolving every shape into haze.
+      '  float core = smoothstep(0.62, 0.0, d);',
+      '  float halo = smoothstep(1.0, 0.3, d) * 0.32;',
+      '  float a = clamp(core + halo, 0.0, 1.0);',
+      '  vec3 col = mix(uBone, uGold, vColorMix);',
+      '  float alpha = a * vAlpha;',
+      '  if (alpha < 0.012) discard;',
+      '  gl_FragColor = vec4(col, alpha);',
+      '}'
+    ].join('\n');
+
+    function compile(type, src){
+      var s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+        console.error('Shader compile error:', gl.getShaderInfoLog(s));
+      }
+      return s;
+    }
+    var prog = gl.createProgram();
+    gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT));
+    gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      console.error('Program link error:', gl.getProgramInfoLog(prog));
+    }
+    gl.useProgram(prog);
+
+    /* -------- procedural geometry -------- */
+    var particles = []; // {x,y,z, sx,sy,sz, group, colorMix, size}
+
+    function push(x,y,z, group, colorMix, size, scx, scy, scz){
+      particles.push({
+        x:x, y:y, z:z,
+        sx: scx===undefined ? 0 : scx,
+        sy: scy===undefined ? 0 : scy,
+        sz: scz===undefined ? 0 : scz,
+        group: group, colorMix: colorMix, size: size
+      });
+    }
+
+    function rand(a,b){ return a + Math.random()*(b-a); }
+
+    /* ----- eye ----- */
+    (function buildEye(){
+      var eyeR = 0.46, eyeH = 0.30;
+      function boundY(x, top){
+        var t = Math.max(-1, Math.min(1, x/eyeR));
+        var shape = Math.cos(t * Math.PI/2);
+        return (top?1:-1) * eyeH * shape;
+      }
+      var scleraCount = Math.round(3400 * LOD);
+      var tries = 0;
+      var placed = 0;
+      var pupilR = 0.1, irisR = 0.225;
+      while (placed < scleraCount && tries < scleraCount*6){
+        tries++;
+        var x = rand(-eyeR, eyeR);
+        var y = rand(-eyeH, eyeH);
+        var top = boundY(x, true), bot = boundY(x, false);
+        if (y < bot || y > top) continue;
+        var rr = Math.sqrt(x*x + y*y);
+        if (rr < pupilR) continue;
+        placed++;
+        var nx = x/eyeR, ny = y/eyeH;
+        var r2 = nx*nx + ny*ny;
+        var z = Math.sqrt(Math.max(0, 1 - r2*0.9)) * 0.30;
+        var cmix, size, group;
+        if (rr < irisR){
+          // iris + pupil rim — group 4, the only part of the eye allowed
+          // to slide (the gaze), everything else stays fixed
+          group = 4;
+          var innerEdge = (rr-pupilR)/(irisR-pupilR); // 0 at pupil, 1 at outer iris
+          cmix = 0.35 + (1-innerEdge) * 0.6;
+          size = rand(2.2, 3.4) * (0.55 + 0.45*innerEdge); // thins toward the pupil
+        } else {
+          group = 0;
+          cmix = rand(0.02, 0.09);
+          size = rand(2.3, 3.1);
+        }
+        var scatterDir = norm3(x, y*1.2 + 0.4, z*0.4 + rand(-0.2,0.2));
+        push(x, y, z, group, cmix, size, scatterDir[0]*rand(0.7,1.3), scatterDir[1]*rand(0.7,1.3), scatterDir[2]*rand(0.7,1.3));
+      }
+      /* pupil rim — a crisp bright ring right at the iris/pupil boundary
+         so the dark pupil reads as a defined hole, not a fade into nothing */
+      var pupilRimN = Math.round(90 * LOD);
+      for (var pr=0; pr<pupilRimN; pr++){
+        var pa = (pr/pupilRimN) * Math.PI*2;
+        for (var pk=0; pk<2; pk++){
+          var prad = pupilR * (0.97 + pk*0.05);
+          var px2 = Math.cos(pa)*prad, py2 = Math.sin(pa)*prad;
+          var pz2 = Math.sqrt(Math.max(0,1-(px2/eyeR)*(px2/eyeR)-(py2/eyeH)*(py2/eyeH)*0.9))*0.30;
+          var scp = norm3(px2, py2*1.2+0.4, pz2*0.4);
+          push(px2, py2, pz2+0.008, 4, rand(0.55,0.85), rand(2.6,3.2),
+            scp[0]*rand(0.7,1.3), scp[1]*rand(0.8,1.4), scp[2]*rand(0.6,1.1));
+        }
+      }
+      /* eyelid rims */
+      var rimSamples = Math.round(190 * LOD);
+      for (var i=0;i<rimSamples;i++){
+        var xx = -eyeR + (eyeR*2)*(i/(rimSamples-1));
+        [true,false].forEach(function(top){
+          var yy = boundY(xx, top);
+          var nx2 = xx/eyeR, ny2 = yy/eyeH;
+          var r2b = nx2*nx2+ny2*ny2;
+          var zz = Math.sqrt(Math.max(0,1-r2b*0.9))*0.30;
+          for (var k=0;k<3;k++){
+            var jitter = (k-1)*0.012;
+            var sdir = norm3(xx, yy*1.3 + (top?0.5:-0.5), zz*0.5);
+            push(xx, yy+jitter*(top?1:-1), zz+ (k-1)*0.01,
+              top?1:2, 0.02, rand(2.0,2.7),
+              sdir[0]*rand(0.8,1.3), sdir[1]*rand(0.8,1.3), sdir[2]*rand(0.8,1.3));
+          }
+        });
+      }
+      /* catchlight highlight cluster */
+      var hl = Math.round(46*LOD);
+      for (var h=0; h<hl; h++){
+        var hx = -0.05 + rand(-0.02,0.02);
+        var hy = 0.06 + rand(-0.02,0.02);
+        push(hx, hy, 0.30, 3, 0.15, rand(1.6,2.2), hx*2, hy*2+0.6, 0.4);
+      }
+    })();
+
+    function norm3(x,y,z){
+      var l = Math.sqrt(x*x+y*y+z*z) || 1;
+      return [x/l, y/l, z/l];
+    }
+    function bez(p0,p1,p2,t){
+      var mt = 1-t;
+      return [
+        mt*mt*p0[0] + 2*mt*t*p1[0] + t*t*p2[0],
+        mt*mt*p0[1] + 2*mt*t*p1[1] + t*t*p2[1]
+      ];
+    }
+    function bezTangent(p0,p1,p2,t){
+      var x = 2*(1-t)*(p1[0]-p0[0]) + 2*t*(p2[0]-p1[0]);
+      var y = 2*(1-t)*(p1[1]-p0[1]) + 2*t*(p2[1]-p1[1]);
+      var l = Math.sqrt(x*x+y*y) || 1;
+      return [x/l, y/l];
+    }
+
+    /* ----- wings -----
+       Two wings, spreading up and out from the eye like a classic pair in
+       flight — not six. Each is one wide fan (rather than six narrow
+       ones), built from filled leaf-shaped feathers (widest a little past
+       the root, tapering to a point at the tip) so it reads as a real
+       spread of plumage. */
+    var wingDefs = [
+      { idx:0, angle:-58, len:2.3 },
+      { idx:1, angle: 58, len:2.3 }
+    ];
+    var eyeEdgeR = 0.44;
+
+    // one feather: a bold, clearly-bounded leaf shape — a soft interior
+    // fill, a bright shaft down the spine, and a crisp doubled contour
+    // tracing the outline. The contour is what makes it read as a single
+    // defined plume instead of a patch of haze.
+    function buildFeather(root, fdir, flen, maxWidth, curl, zBase, zJitter, wingIdx){
+      var perp = [-fdir[1], fdir[0]];
+      var p0 = root;
+      var p1 = [root[0]+fdir[0]*flen*0.5+perp[0]*flen*curl*0.5, root[1]+fdir[1]*flen*0.5+perp[1]*flen*curl*0.5];
+      var p2 = [root[0]+fdir[0]*flen+perp[0]*flen*curl, root[1]+fdir[1]*flen+perp[1]*flen*curl];
+      var tPeak = 0.4;
+      function widthAt(t){
+        var env = t < tPeak
+          ? Math.sin((t/tPeak) * (Math.PI/2))
+          : Math.cos(((t-tPeak)/(1-tPeak)) * (Math.PI/2));
+        return maxWidth * Math.max(0, env) * (1 - 0.08*t);
+      }
+
+      // dense enough along BOTH axes that neighboring points overlap and
+      // read as a continuous filled shape — the earlier sparse sampling
+      // was the reason every attempt still looked like scattered dust.
+      var tSamples = 30, wSamples = 13;
+      for (var ti=0; ti<tSamples; ti++){
+        var t = ti/(tSamples-1);
+        var pos = bez(p0,p1,p2,t);
+        var tangent = bezTangent(p0,p1,p2,t);
+        var normal = [-tangent[1], tangent[0]];
+        var z = zBase + zJitter*t*t + rand(-0.015,0.015);
+        var w = widthAt(t);
+
+        // solid interior fill
+        for (var wi=0; wi<wSamples; wi++){
+          var s = wSamples<=1 ? 0 : (wi/(wSamples-1))*2-1;
+          var off = s*w*0.78;
+          var px = pos[0] + normal[0]*off;
+          var py = pos[1] + normal[1]*off;
+          var pz = z;
+          var cmix = rand(0.0,0.04);
+          var sc = norm3(fdir[0]*0.5 + normal[0]*s*0.35, fdir[1]*0.5 + normal[1]*s*0.35 + 0.55, pz*0.3);
+          push(px, py, pz, 10+wingIdx, cmix, rand(1.8,2.4),
+            sc[0]*rand(0.7,1.3), sc[1]*rand(0.8,1.4), sc[2]*rand(0.5,1.0));
+        }
+
+        // bright shaft down the spine
+        var cmixShaft = Math.random() < 0.02 ? rand(0.3,0.6) : rand(0.0,0.05);
+        var scS = norm3(fdir[0]*0.6, fdir[1]*0.6+0.55, z*0.3);
+        push(pos[0], pos[1], z+0.01, 10+wingIdx, cmixShaft, rand(2.6,3.2) * (0.6+0.4*(1-t)),
+          scS[0]*rand(0.8,1.3), scS[1]*rand(0.9,1.4), scS[2]*rand(0.6,1.0));
+
+        // crisp tripled contour tracing both edges — this is what gives
+        // the feather an actual outline instead of a soft cloud
+        if (w > 0.003) {
+          [-1, 1].forEach(function(s){
+            for (var k=0; k<3; k++){
+              var off2 = s*w*(0.97+k*0.045);
+              var cx = pos[0] + normal[0]*off2;
+              var cy = pos[1] + normal[1]*off2;
+              var cz = z + 0.015;
+              var scc = norm3(fdir[0]*0.4 + normal[0]*s*0.5, fdir[1]*0.4 + normal[1]*s*0.5 + 0.5, cz*0.3);
+              push(cx, cy, cz, 10+wingIdx, rand(0.0,0.04), rand(2.1,2.6),
+                scc[0]*rand(0.7,1.3), scc[1]*rand(0.8,1.4), scc[2]*rand(0.5,1.0));
+            }
+          });
+        }
+      }
+    }
+
+    wingDefs.forEach(function(wd){
+      var dirAngle = wd.angle * Math.PI/180;
+      var dir = [Math.sin(dirAngle), Math.cos(dirAngle)];
+      var side = dir[0] >= 0 ? 1 : -1;
+      var rootBase = [dir[0]*eyeEdgeR, dir[1]*eyeEdgeR];
+
+      // two rows (back + front) fanned across a wide arc — this one wing
+      // covers the whole silhouette (shoulder near-vertical to wingtip
+      // near-horizontal), so it needs real feather count to fill in.
+      var layers = [
+        { z:-0.85, spreadDeg:36, feathers:Math.round(7*LOD),  lenMul:0.42, widthMul:0.7  }, // coverts, near the root
+        { z:-0.5,  spreadDeg:42, feathers:Math.round(10*LOD), lenMul:0.78, widthMul:0.86 },
+        { z: 0.5,  spreadDeg:46, feathers:Math.round(13*LOD), lenMul:1.0,  widthMul:1.0  }
+      ];
+
+      layers.forEach(function(layer){
+        var rootWidth = wd.len * 0.02;
+        for (var f=0; f<layer.feathers; f++){
+          var ft = layer.feathers <= 1 ? 0.5 : f/(layer.feathers-1); // 0..1 across the fan
+          var rootOffset = (ft - 0.5) * 2 * rootWidth;
+          var perpBase = [-dir[1], dir[0]];
+          var root = [rootBase[0] + perpBase[0]*rootOffset*side, rootBase[1] + perpBase[1]*rootOffset*side];
+          var angOffset = (ft - 0.5) * 2 * layer.spreadDeg * Math.PI/180 * side;
+          var fdir = [ Math.sin(dirAngle+angOffset), Math.cos(dirAngle+angOffset) ];
+          var lenShape = 0.65 + 0.5 * Math.pow(ft, 0.75);
+          var flen = wd.len * layer.lenMul * lenShape;
+          var maxWidth = flen * 0.145 * layer.widthMul;
+          var curl = rand(0.03, 0.11) * side * -1;
+          buildFeather(root, fdir, flen, maxWidth, curl, layer.z, rand(-0.1,0.1), wd.idx);
+        }
+      });
+    });
+
+    /* ----- celestial rings ----- */
+    var ringDefs = [
+      { r:0.74, tiltX:18,  tiltZ:8,   n:Math.round(210*LOD) },
+      { r:1.04, tiltX:-24, tiltZ:-12, n:Math.round(250*LOD) },
+      { r:1.34, tiltX:32,  tiltZ:20,  n:Math.round(280*LOD) },
+      { r:1.64, tiltX:-14, tiltZ:-28, n:Math.round(310*LOD) }
+    ];
+    ringDefs.forEach(function(rd, ri){
+      var tx = rd.tiltX*Math.PI/180, tz = rd.tiltZ*Math.PI/180;
+      for (var i=0;i<rd.n;i++){
+        var a = (i/rd.n) * Math.PI*2;
+        var x = Math.cos(a)*rd.r;
+        var y0 = Math.sin(a)*rd.r;
+        var z0 = 0;
+        // tilt around X
+        var y1 = y0*Math.cos(tx) - z0*Math.sin(tx);
+        var z1 = y0*Math.sin(tx) + z0*Math.cos(tx);
+        // tilt around Z
+        var x2 = x*Math.cos(tz) - y1*Math.sin(tz);
+        var y2 = x*Math.sin(tz) + y1*Math.cos(tz);
+        var sc = norm3(x2, y2*0.7+0.3, z1);
+        push(x2, y2, z1, 20+ri, rand(0.06,0.2), rand(1.3,1.9),
+          sc[0]*rand(0.6,1.1), sc[1]*rand(0.7,1.2), sc[2]*rand(0.5,0.9));
+      }
+    });
+
+    /* ----- ambient ethereal dust -----
+       A loose halo of faint drifting motes around the whole being —
+       adds depth and atmosphere without competing with the silhouette. */
+    var dustCount = Math.round(1200 * LOD);
+    for (var du=0; du<dustCount; du++){
+      var dr = rand(1.9, 3.6);
+      var dth = rand(0, Math.PI*2);
+      var dph = rand(-1,1);
+      var sinp = Math.sqrt(Math.max(0,1-dph*dph));
+      var dx = Math.cos(dth)*sinp*dr;
+      var dy = dph*dr*0.95;
+      var dz = Math.sin(dth)*sinp*dr*0.75;
+      var scd = norm3(dx, dy*0.6+0.5, dz*0.4);
+      push(dx, dy, dz, 30, rand(0,0.08), rand(0.5,1.2),
+        scd[0]*rand(0.3,0.8), scd[1]*rand(0.3,0.8), scd[2]*rand(0.3,0.6));
+    }
+
+    /* sort roughly by z for nicer blend order */
+    particles.sort(function(a,b){ return a.z-b.z; });
+
+    var N = particles.length;
+    var aPosArr = new Float32Array(N*3);
+    var aScatterArr = new Float32Array(N*3);
+    var aGroupArr = new Float32Array(N);
+    var aColorMixArr = new Float32Array(N);
+    var aSizeArr = new Float32Array(N);
+    for (var i=0;i<N;i++){
+      var p = particles[i];
+      aPosArr[i*3]=p.x; aPosArr[i*3+1]=p.y; aPosArr[i*3+2]=p.z;
+      aScatterArr[i*3]=p.sx; aScatterArr[i*3+1]=p.sy; aScatterArr[i*3+2]=p.sz;
+      aGroupArr[i]=p.group;
+      aColorMixArr[i]=p.colorMix;
+      aSizeArr[i]=p.size;
+    }
+
+    function makeBuffer(data, loc, itemSize){
+      var buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(loc);
+      gl.vertexAttribPointer(loc, itemSize, gl.FLOAT, false, 0, 0);
+      return buf;
+    }
+    var locPos = gl.getAttribLocation(prog,'aPos');
+    var locScatter = gl.getAttribLocation(prog,'aScatter');
+    var locGroup = gl.getAttribLocation(prog,'aGroup');
+    var locColorMix = gl.getAttribLocation(prog,'aColorMix');
+    var locSize = gl.getAttribLocation(prog,'aSize');
+
+    makeBuffer(aPosArr, locPos, 3);
+    makeBuffer(aScatterArr, locScatter, 3);
+    makeBuffer(aGroupArr, locGroup, 1);
+    makeBuffer(aColorMixArr, locColorMix, 1);
+    makeBuffer(aSizeArr, locSize, 1);
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+    gl.disable(gl.DEPTH_TEST);
+
+    var uTime = gl.getUniformLocation(prog,'uTime');
+    var uGazeOffsetU = gl.getUniformLocation(prog,'uGazeOffset');
+    var uAngelRot = gl.getUniformLocation(prog,'uAngelRot');
+    var uRingAngles = gl.getUniformLocation(prog,'uRingAngles');
+    var uScatterU = gl.getUniformLocation(prog,'uScatter');
+    var uBlinkU = gl.getUniformLocation(prog,'uBlink');
+    var uRepelU = gl.getUniformLocation(prog,'uRepel');
+    var uRepelStrengthU = gl.getUniformLocation(prog,'uRepelStrength');
+    var uAspectU = gl.getUniformLocation(prog,'uAspect');
+    var uViewScaleU = gl.getUniformLocation(prog,'uViewScale');
+    var uFocalU = gl.getUniformLocation(prog,'uFocal');
+    var uPixelRatioU = gl.getUniformLocation(prog,'uPixelRatio');
+    var uPointRangeU = gl.getUniformLocation(prog,'uPointRange');
+    var uReducedU = gl.getUniformLocation(prog,'uReduced');
+    var uBoneU = gl.getUniformLocation(prog,'uBone');
+    var uGoldU = gl.getUniformLocation(prog,'uGold');
+    var uClickTimeU = gl.getUniformLocation(prog,'uClickTime');
+    var uClickPosU = gl.getUniformLocation(prog,'uClickPos');
+
+    gl.uniform3f(uBoneU, 236/255, 228/255, 211/255);
+    gl.uniform3f(uGoldU, 214/255, 168/255, 96/255);
+    gl.uniform1f(uReducedU, reduceMotion?1:0);
+    gl.uniform1f(uClickTimeU, -999.0);
+    gl.uniform3f(uClickPosU, 0, 0, 0);
+
+    var pointRange = gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE) || [1,64];
+    gl.uniform2f(uPointRangeU, Math.max(1,pointRange[0]), Math.min(48,pointRange[1]));
+
+    var dpr = Math.min(2, window.devicePixelRatio||1);
+    function resize(){
+      var w = canvas.clientWidth, h = canvas.clientHeight;
+      canvas.width = Math.round(w*dpr);
+      canvas.height = Math.round(h*dpr);
+      gl.viewport(0,0,canvas.width,canvas.height);
+      gl.uniform1f(uAspectU, canvas.width/canvas.height);
+      gl.uniform1f(uPixelRatioU, dpr);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    gl.uniform1f(uFocalU, 4.0);
+    gl.uniform1f(uViewScaleU, isMobile ? 0.5 : 0.47);
+
+    /* -------- interaction state -------- */
+    var mouseX=0, mouseY=0, targetActive=false, lastActiveTime=0;
+    // the eye never rotates in 3D (that's what was breaking its silhouette
+    // when the body turned) — it stays billboarded and only the iris slides
+    // a little within the socket, so the gaze always reads correctly.
+    var gazeOffset=[0,0], gazeTarget=[0,0];
+    var angelRot=[0,0];
+    var repel=[0,0,0], repelStrength=0, repelTarget=0;
+    var ringAngles=[0,0,0,0];
+    var scatterProg=0, scatterSmoothed=0;
+    var blinkState = { phase:'idle', t:0 };
+
+    /* free orbit (mouse-drag) with momentum, layered on top of the gaze tilt */
+    var userYaw=0, userPitch=0, userVelYaw=0, userVelPitch=0;
+    var dragging=false, dragLastX=0, dragLastY=0, dragLastT=0;
+    var pointerDownX=0, pointerDownY=0, pointerDownT=0, pointerDownIsMouse=false;
+
+    function setPointer(nx, ny, active){
+      mouseX = nx; mouseY = ny;
+      targetActive = active;
+      if (active) lastActiveTime = performance.now();
+    }
+    function heroRect(){ return document.getElementById('hero-stage').getBoundingClientRect(); }
+    function localRepelPoint(){
+      // approximate local-space position under the current pointer, matching
+      // the mapping used for the hover-repel uniform, for ripple placement
+      return [mouseX*1.7, mouseY*1.5, 0.3];
+    }
+
+    window.addEventListener('pointermove', function(e){
+      var r = heroRect();
+      if (e.clientY < r.top || e.clientY > r.bottom) { setPointer(mouseX, mouseY, false); return; }
+      var nx = (e.clientX / window.innerWidth) * 2 - 1;
+      var ny = -((e.clientY / window.innerHeight) * 2 - 1);
+      setPointer(nx, ny, true);
+
+      if (dragging){
+        var now = performance.now();
+        var dt = Math.max(0.001, (now-dragLastT)/1000);
+        var dx = e.clientX - dragLastX;
+        var dy = e.clientY - dragLastY;
+        var dYaw = (dx / window.innerWidth) * Math.PI * 0.7;
+        var dPitch = -(dy / window.innerHeight) * Math.PI * 0.7;
+        userYaw += dYaw;
+        userPitch = Math.max(-0.85, Math.min(0.85, userPitch + dPitch));
+        userVelYaw = dYaw/dt; userVelPitch = dPitch/dt;
+        dragLastX = e.clientX; dragLastY = e.clientY; dragLastT = now;
+      }
+    }, {passive:true});
+    window.addEventListener('pointerleave', function(){ setPointer(mouseX, mouseY, false); });
+
+    canvas.addEventListener('pointerdown', function(e){
+      pointerDownX = e.clientX; pointerDownY = e.clientY; pointerDownT = performance.now();
+      pointerDownIsMouse = (e.pointerType === 'mouse');
+      if (pointerDownIsMouse){
+        dragging = true;
+        canvas.classList.add('dragging');
+        dragLastX = e.clientX; dragLastY = e.clientY; dragLastT = pointerDownT;
+        userVelYaw = 0; userVelPitch = 0;
+      }
+    });
+    window.addEventListener('pointerup', function(e){
+      dragging = false;
+      canvas.classList.remove('dragging');
+      var dist = Math.hypot(e.clientX-pointerDownX, e.clientY-pointerDownY);
+      var dur = performance.now() - pointerDownT;
+      if (dist < 8 && dur < 500){
+        if (!revealed) {
+          triggerReveal();
+        } else {
+          var rp = localRepelPoint();
+          clickTime = performance.now()/1000;
+          clickPos = rp;
+        }
+      }
+    });
+
+    canvas.addEventListener('touchmove', function(e){
+      if (!e.touches || !e.touches.length) return;
+      var t = e.touches[0];
+      var nx = (t.clientX / window.innerWidth) * 2 - 1;
+      var ny = -((t.clientY / window.innerHeight) * 2 - 1);
+      setPointer(nx, ny, true);
+    }, {passive:true});
+    canvas.addEventListener('touchend', function(){ setPointer(mouseX, mouseY, false); });
+
+    var clickTime = -999, clickPos = [0,0,0];
+
+    function scheduleBlink(){
+      setTimeout(function(){
+        blinkState.phase = 'closing'; blinkState.t = 0;
+      }, rand(4200, 11000));
+    }
+    scheduleBlink();
+
+    var lastFrame = performance.now();
+    function tick(now){
+      var dt = Math.min(0.05, (now-lastFrame)/1000);
+      lastFrame = now;
+      var t = now/1000;
+
+      var idleT = 0;
+      var idle = (now - lastActiveTime) > 1400;
+      var ix = idle ? Math.sin(t*0.13)*0.05 : 0;
+      var iy = idle ? Math.cos(t*0.09)*0.045 : 0;
+
+      var tx = targetActive ? mouseX : ix;
+      var ty = targetActive ? mouseY : iy;
+
+      // gaze: a small 2D slide of the iris within the socket, never a
+      // rotation of the eye itself — this is what keeps the eyeball reading
+      // correctly no matter how the body is turned.
+      gazeTarget[0] = tx * 0.115; gazeTarget[1] = ty * 0.085;
+      gazeOffset[0] += (gazeTarget[0]-gazeOffset[0]) * (reduceMotion?0.14:0.09);
+      gazeOffset[1] += (gazeTarget[1]-gazeOffset[1]) * (reduceMotion?0.14:0.09);
+
+      // the whole body turns toward wherever the cursor is, directly and
+      // quickly — driven straight off tx/ty (the same raw input the gaze
+      // itself uses), not off the already-smoothed, small-radius gaze
+      // offset, which was too faint and too laggy to read as "following"
+      angelRot[0] += (tx*0.85 - angelRot[0]) * 0.12;
+      angelRot[1] += (ty*0.6 - angelRot[1]) * 0.12;
+
+      /* free-orbit momentum: coasts after a drag release, then eases
+         gently back toward rest so the being always settles facing front */
+      if (!dragging){
+        userYaw += userVelYaw * dt;
+        userPitch += userVelPitch * dt;
+        userVelYaw *= Math.pow(0.06, dt);
+        userVelPitch *= Math.pow(0.06, dt);
+        userYaw += (0 - userYaw) * (reduceMotion?0.03:0.006);
+        userPitch += (0 - userPitch) * (reduceMotion?0.03:0.006);
+      }
+      userPitch = Math.max(-0.85, Math.min(0.85, userPitch));
+
+      // wheels within wheels — always visibly turning, each ring its own
+      // speed and direction, never all in sync
+      var wheelSpeed = reduceMotion ? 0.15 : 1;
+      ringAngles[0] += 0.0068 * wheelSpeed;
+      ringAngles[1] -= 0.0104 * wheelSpeed;
+      ringAngles[2] += 0.0047 * wheelSpeed;
+      ringAngles[3] -= 0.0081 * wheelSpeed;
+
+      repelTarget = (targetActive && scatterProg < 0.7) ? 0.16 : 0;
+      repelStrength += (repelTarget - repelStrength) * 0.08;
+      repel[0] = mouseX * 1.7;
+      repel[1] = mouseY * 1.5;
+      repel[2] = 0.3;
+
+      /* blink state machine */
+      if (blinkState.phase === 'closing'){
+        blinkState.t += dt/0.11;
+        if (blinkState.t >= 1){ blinkState.t=1; blinkState.phase='holding'; blinkState.holdT=0; }
+      } else if (blinkState.phase === 'holding'){
+        blinkState.holdT += dt;
+        if (blinkState.holdT > 0.05){ blinkState.phase='opening'; }
+      } else if (blinkState.phase === 'opening'){
+        blinkState.t -= dt/0.16;
+        if (blinkState.t <= 0){ blinkState.t=0; blinkState.phase='idle'; scheduleBlink(); }
+      }
+
+      scatterSmoothed += (scatterProg - scatterSmoothed) * 0.12;
+
+      gl.uniform1f(uTime, t);
+      gl.uniform2f(uGazeOffsetU, gazeOffset[0], gazeOffset[1]);
+      gl.uniform2f(uAngelRot, angelRot[0] + userYaw, angelRot[1] + userPitch);
+      gl.uniform4f(uRingAngles, ringAngles[0]+userYaw*0.15, ringAngles[1]-userYaw*0.1, ringAngles[2]+userYaw*0.08, ringAngles[3]-userYaw*0.12);
+      gl.uniform1f(uScatterU, scatterSmoothed);
+      gl.uniform1f(uBlinkU, blinkState.t);
+      gl.uniform3f(uRepelU, repel[0], repel[1], repel[2]);
+      gl.uniform1f(uRepelStrengthU, repelStrength);
+      gl.uniform1f(uClickTimeU, clickTime);
+      gl.uniform3f(uClickPosU, clickPos[0], clickPos[1], clickPos[2]);
+
+      gl.clearColor(0,0,0,0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.drawArrays(gl.POINTS, 0, N);
+
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+
+    /* expose scatter setter for the reveal animation above */
+    window.__setAngelScatter = function(v){ scatterProg = v; };
+  } else {
+    canvas.style.display = 'none';
+  }
+  } catch (eParticles) {
+    // whatever went wrong in the particle sculpture, it must not take the
+    // rest of the site down with it — hide the canvas and carry on with
+    // everything below (tap-to-enter already works via the fallback above)
+    console.error('Particle sculpture failed to initialize:', eParticles);
+    if (canvas) canvas.style.display = 'none';
+  }
+
+  /* ================================================================
+     PRODUCT INTERACTIONS
+     ================================================================ */
+  var sizeRow = document.getElementById('size-row');
+  sizeRow.addEventListener('click', function(e){
+    var el = e.target.closest('.size-pill');
+    if (!el) return;
+    sizeRow.querySelectorAll('.size-pill').forEach(function(p){ p.classList.remove('active'); });
+    el.classList.add('active');
+  });
+  /* ================================================================
+     CHECKOUT — wired to the real Supabase Edge Function. Reserves
+     inventory and opens a Stripe Checkout Session server-side; until
+     the Stripe keys are actually configured on the backend, the
+     function itself answers "not_configured" and we show that
+     honestly rather than pretending a payment went through.
+
+     SANDBOX_MODE is a front-end kill switch, independent of the
+     backend's Stripe test/live key state — it exists so the public
+     gloriyah.com domain can go live for browsing right now without any
+     path to a real purchase attempt, even a harmlessly-declined one.
+     Flip to false only when this is genuinely ready to take real
+     orders (real inventory loaded, Stripe in live mode, etc).
+     ================================================================ */
+  var SANDBOX_MODE = true;
+  var SUPABASE_FN_URL = 'https://tgtgkasujuaddyqeaquf.supabase.co/functions/v1/create-checkout-session';
+  var SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_QAAL8U76GIn4y7jGAM7zSQ_T9K2q4dk';
+
+  var checkoutOverlay = document.getElementById('checkout-overlay');
+  var checkoutNote = document.getElementById('checkout-note');
+  var checkoutSubmit = document.getElementById('checkout-submit');
+  var checkoutDefaultLabel = checkoutSubmit.textContent;
+
+  function openCheckout(){
+    var activeSize = sizeRow.querySelector('.size-pill.active');
+    var sizeLabel = activeSize ? activeSize.getAttribute('data-size') : 'S';
+    document.getElementById('co-size-label').textContent = 'SIZE ' + sizeLabel + ' · EDITION OF 111';
+    checkoutNote.classList.remove('show');
+    checkoutOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeCheckout(){
+    checkoutOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function showCheckoutNote(text){
+    checkoutNote.textContent = text;
+    checkoutNote.classList.add('show');
+  }
+
+  document.getElementById('add-cart-btn').addEventListener('click', openCheckout);
+  document.getElementById('checkout-close').addEventListener('click', closeCheckout);
+  checkoutOverlay.addEventListener('click', function(e){
+    if (e.target === checkoutOverlay) closeCheckout();
+  });
+  window.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && checkoutOverlay.classList.contains('open')) closeCheckout();
+  });
+
+  checkoutSubmit.addEventListener('click', function(){
+    var activeSize = sizeRow.querySelector('.size-pill.active');
+    var sizeLabel = activeSize ? activeSize.getAttribute('data-size') : 'S';
+
+    if (SANDBOX_MODE) {
+      showCheckoutNote("GLORIYAH ISN'T OPEN FOR ORDERS YET — CHAPTER 001 IS STILL IN PREVIEW.");
+      return;
+    }
+
+    checkoutSubmit.disabled = true;
+    checkoutSubmit.textContent = 'PROCESSING…';
+    checkoutNote.classList.remove('show');
+
+    fetch(SUPABASE_FN_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_PUBLISHABLE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_PUBLISHABLE_KEY
+      },
+      body: JSON.stringify({ size: sizeLabel })
+    })
+      .then(function(res){ return res.json().then(function(body){ return { ok: res.ok, body: body }; }); })
+      .then(function(result){
+        if (result.ok && result.body && result.body.url) {
+          window.location.href = result.body.url;
+          return;
+        }
+        var msg = result.body && result.body.message
+          ? result.body.message.toUpperCase()
+          : (result.body && result.body.error === 'not_configured'
+              ? "PAYMENT PROCESSING ISN'T CONNECTED YET — THIS IS A PREVIEW OF THE CHECKOUT FLOW."
+              : 'SOMETHING WENT WRONG STARTING CHECKOUT. PLEASE TRY AGAIN.');
+        showCheckoutNote(msg);
+        checkoutSubmit.disabled = false;
+        checkoutSubmit.textContent = checkoutDefaultLabel;
+      })
+      .catch(function(){
+        showCheckoutNote('COULD NOT REACH CHECKOUT. CHECK YOUR CONNECTION AND TRY AGAIN.');
+        checkoutSubmit.disabled = false;
+        checkoutSubmit.textContent = checkoutDefaultLabel;
+      });
+  });
+
+  /* ================================================================
+     FILM NOTE TOGGLE
+     ================================================================ */
+  document.getElementById('film-play').addEventListener('click', function(){
+    document.getElementById('film-note').classList.toggle('show');
+  });
+
+  /* ================================================================
+     PHOTOGRAPHY FILMSTRIP (built from real, distinct copy)
+     ================================================================ */
+  var frames = [
+    { tag:'STONE',  cap:'Ancient stone, held in frame.' },
+    { tag:'FLASH',  cap:'Harsh light. No apology.' },
+    { tag:'DESERT', cap:'Nothing to hide behind out here.' },
+    { tag:'WATER',  cap:'Still, until it isn’t.' },
+    { tag:'SMOKE',  cap:'Something lifting off the frame.' },
+    { tag:'METAL',  cap:'Cold surface, warm garment.' },
+    { tag:'FABRIC', cap:'Movement caught mid-fall.' }
+  ];
+  var strip = document.getElementById('filmstrip');
+  frames.forEach(function(f, i){
+    var d = document.createElement('div');
+    d.className = 'frame';
+    d.innerHTML =
+      '<div class="f-idx mono">' + String(i+1).padStart(2,'0') + ' / 07</div>' +
+      '<div class="f-tag">' + f.tag + '</div>' +
+      '<div class="f-cap">' + f.cap + '</div>';
+    strip.appendChild(d);
+  });
+
+  /* ================================================================
+     SCROLL REVEAL — nothing past the hero is pre-shown; every section,
+     plate, and row unveils itself as the visitor arrives at it, with a
+     cascading stagger through grouped items (plates, chapter rows).
+     ================================================================ */
+  (function setupScrollReveal(){
+    var groups = [document.querySelectorAll('.plate-grid > .reveal'),
+                  document.querySelectorAll('#chapters .chapter-row')];
+    groups.forEach(function(list){
+      list.forEach(function(el, i){ el.style.transitionDelay = Math.min(i*90, 360) + 'ms'; });
+    });
+
+    var revealEls = document.querySelectorAll('.reveal');
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      revealEls.forEach(function(el){ el.classList.add('in-view'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -8% 0px' });
+    revealEls.forEach(function(el){ io.observe(el); });
+  })();
+
+  /* ================================================================
+     MUSIC PLAYER — WebAudio ambient pad, user-gesture gated
+     ================================================================ */
+  var waveform = document.getElementById('waveform');
+  var bars = [];
+  var BAR_COUNT = 40;
+  for (var bi=0; bi<BAR_COUNT; bi++){
+    var el = document.createElement('i');
+    el.style.height = '6px';
+    waveform.appendChild(el);
+    bars.push(el);
+  }
+
+  var audioCtx = null, analyser = null, dataArray = null, playing = false;
+  var trackDuration = 161; // 02:41
+  var trackStart = 0;
+  var soundMini = document.getElementById('sound-mini');
+  var soundMiniLabel = document.getElementById('sound-mini-label');
+  soundMini.classList.add('visible');
+
+  function fmtTime(s){
+    s = Math.max(0, Math.floor(s));
+    var m = Math.floor(s/60), sec = s%60;
+    return (m<10?'0':'')+m+':'+(sec<10?'0':'')+sec;
+  }
+
+  function ensureAudio(){
+    if (audioCtx) return;
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new Ctx();
+
+    var master = audioCtx.createGain();
+    master.gain.value = 0.0001;
+    master.connect(audioCtx.destination);
+
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 128;
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
+    master.connect(analyser);
+
+    var freqs = [55, 110, 164.81, 220];
+    freqs.forEach(function(f, i){
+      var osc = audioCtx.createOscillator();
+      osc.type = i===0 ? 'sine' : 'triangle';
+      osc.frequency.value = f;
+      var g = audioCtx.createGain();
+      g.gain.value = 0.16 / (i+1);
+      var lfo = audioCtx.createOscillator();
+      lfo.frequency.value = 0.05 + i*0.02;
+      var lfoGain = audioCtx.createGain();
+      lfoGain.gain.value = 0.06 / (i+1);
+      lfo.connect(lfoGain);
+      lfoGain.connect(g.gain);
+      osc.connect(g); g.connect(master);
+      osc.start(); lfo.start();
+    });
+
+    window.__audioMaster = master;
+  }
+
+  function setPlaying(on){
+    playing = on;
+    document.getElementById('play-icon').style.display = on ? 'none' : 'block';
+    document.getElementById('pause-icon').style.display = on ? 'block' : 'none';
+    soundMini.classList.toggle('on', on);
+    soundMiniLabel.textContent = on ? 'SOUND ON' : 'SOUND OFF';
+    if (on){
+      ensureAudio();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      window.__audioMaster.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 1.2);
+      trackStart = performance.now() - (trackElapsed||0)*1000;
+    } else if (audioCtx) {
+      window.__audioMaster.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.6);
+    }
+  }
+
+  var trackElapsed = 0;
+  function togglePlay(){ setPlaying(!playing); }
+  document.getElementById('play-btn').addEventListener('click', togglePlay);
+  soundMini.addEventListener('click', togglePlay);
+
+  function animatePlayer(){
+    if (playing){
+      trackElapsed = ((performance.now()-trackStart)/1000) % trackDuration;
+      var pct = trackElapsed/trackDuration;
+      document.getElementById('track-fill').style.width = (pct*100)+'%';
+      document.getElementById('track-dot').style.left = (pct*100)+'%';
+      document.getElementById('t-elapsed').textContent = fmtTime(trackElapsed);
+
+      if (analyser){
+        analyser.getByteFrequencyData(dataArray);
+        for (var i=0;i<bars.length;i++){
+          var v = dataArray[i % dataArray.length] / 255;
+          bars[i].style.height = (5 + v*34)+'px';
+          bars[i].style.opacity = String(0.4 + v*0.6);
+        }
+      }
+    } else {
+      for (var j=0;j<bars.length;j++){
+        var idle = 4 + Math.sin(performance.now()/900 + j)*2 + 4;
+        bars[j].style.height = idle+'px';
+        bars[j].style.opacity = '0.35';
+      }
+    }
+    requestAnimationFrame(animatePlayer);
+  }
+  requestAnimationFrame(animatePlayer);
+
+
+})();
+</script>
+
