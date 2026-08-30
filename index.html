@@ -1,6 +1,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Chapter 001 — Revelation</title>
+<title>Chapter 001 — Genesis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=Archivo:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -16,20 +16,21 @@
     --hero-gold-bright:#e8c077;
     --ash:#75695a;
 
-    /* Everywhere else on the site — the actual ivory + gold theme. */
-    --ivory:#f6f1e6;
-    --ivory-deep:#eae1c7;
-    /* Experiment only — the main scrollable page's own backdrop, distinct
-       from --ivory so the REVELATION title card (which explicitly still
-       uses --ivory) is untouched by this. */
-    --sky-pastel:#d9d3e3;
-    --ink:#37293e;
-    --ink-dim:#71607a;
-    --gold:#9c5f78;
-    --gold-bright:#7d3f5c;
-    --line: rgba(42,36,29,0.14);
-    --line-strong: rgba(42,36,29,0.26);
-    --surface: #efe6ce;
+    /* Everywhere else on the site — white/sky-blue heaven + gold theme. */
+    --ivory:#fbfaf5;
+    --ivory-deep:#f2ecd7;
+    /* the main scrollable page's own backdrop — white into sky-blue,
+       distinct from --ivory so the GENESIS title card (which explicitly
+       still uses --ivory) is untouched by this. */
+    --sky-pastel:#cfe7f6;
+    --ink:#26313e;
+    --ink-dim:#5c6b78;
+    --gold:#a1741f;
+    --gold-bright:#c99a3c;
+    --gold-light:#ecc873;
+    --line: rgba(38,49,62,0.14);
+    --line-strong: rgba(38,49,62,0.26);
+    --surface: #eef6fb;
 
     --font-display: 'Fraunces', 'Iowan Old Style', 'Times New Roman', serif;
     --font-ui: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
@@ -39,7 +40,7 @@
   *{ box-sizing:border-box; }
   html,body{
     margin:0; padding:0;
-    background: linear-gradient(180deg, #c5bcda 0%, #dcd2e3 42%, #ecdadb 100%);
+    background: linear-gradient(180deg, #eef7fc 0%, #d6ecf9 40%, #f7ecd8 100%);
     background-attachment: fixed;
     color: var(--ink);
     width:100%;
@@ -76,6 +77,16 @@
     font-family: var(--font-display);
     font-weight: 400;
     color: var(--ink);
+  }
+  /* Shimmering gilt text for the large display headlines — a flat gold
+     fill reads flat and cheap at large sizes; a gradient across the
+     letterforms is what actually reads as gilded/baroque. */
+  .gold-text{
+    background: linear-gradient(115deg, #8a6a1f 0%, #c99a3c 24%, #f2d68f 48%, #a1741f 66%, #ecc873 84%, #8a6a1f 100%);
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 
   .wrap{
@@ -136,7 +147,7 @@
 
   /* ---------- sky / clouds ----------
      A fixed, full-page WebGL canvas behind everything past the hero —
-     the hero's own opaque background (and the REVELATION title card's)
+     the hero's own opaque background (and the GENESIS title card's)
      fully covers it, so it only ever shows once you're into the actual
      page. Real FBM noise-based volumetric clouds, not CSS shapes — see
      the script block below for the shader. */
@@ -241,14 +252,41 @@
 
   /* This is its own "page" — the eye+wings screen stays exactly as it
      was, untouched; this overlay crossfades in as a solid ivory card
-     that fully covers it, showing CHAPTER 001 / REVELATION in gold. */
+     that fully covers it, showing CHAPTER 001 / GENESIS in gold. This is
+     the "ascension" moment — a light-flooded heaven scene (sky gradient,
+     a soft sunburst, and a gilt gate/rose motif behind the wordmark)
+     rather than a flat card. */
   .hero-text{
     position:absolute; inset:0;
-    background: var(--ivory);
+    overflow:hidden;
+    background:
+      radial-gradient(circle at 50% 38%, rgba(255,255,255,0.97) 0%, rgba(255,244,214,0.55) 24%, rgba(214,236,249,0.94) 48%, #eef7fc 72%),
+      linear-gradient(180deg, #eef7fc 0%, #d8ecf9 55%, #f5e9cd 100%);
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     text-align:center;
     opacity:0;
     pointer-events:none;
+  }
+  .hero-text::before{
+    /* soft gilt sunburst radiating from behind the wordmark */
+    content:"";
+    position:absolute; left:50%; top:38%; width:130vmax; height:130vmax;
+    transform: translate(-50%,-50%);
+    background: repeating-conic-gradient(from 0deg, rgba(201,154,60,0.14) 0deg 3deg, transparent 3deg 11deg);
+    opacity:0.55;
+    pointer-events:none;
+  }
+  .hero-gate{
+    position:absolute; left:50%; top:50%;
+    width:min(80vw, 580px); height:auto;
+    transform: translate(-50%,-50%);
+    opacity:0.6;
+    pointer-events:none;
+  }
+  .hero-text .chapter-tag,
+  .hero-text h1,
+  .hero-text .meta-line{
+    position:relative; z-index:1;
   }
   .hero-text .chapter-tag{
     font-family: var(--font-ui);
@@ -262,7 +300,6 @@
     font-weight:400;
     font-size: clamp(3.6rem, 13vw, 9.5rem);
     letter-spacing: 0.01em;
-    color: var(--gold-bright);
   }
   .hero-text .meta-line{
     margin-top: 22px;
@@ -376,12 +413,12 @@
        just a preview-tool quirk. This gets the translucent, tinted,
        see-through feel from opacity and the rim-light border alone,
        without asking the GPU to blur a moving image continuously. */
-    background: rgba(255,255,255,0.38);
-    border: 1px solid rgba(255,255,255,0.45);
+    background: rgba(255,255,255,0.44);
+    border: 1px solid rgba(201,154,60,0.4);
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.65),
-      inset 0 -1px 0 rgba(120,100,130,0.18),
-      0 8px 28px rgba(120,100,130,0.14);
+      inset 0 1px 0 rgba(255,255,255,0.75),
+      inset 0 -1px 0 rgba(161,116,31,0.16),
+      0 8px 28px rgba(90,120,150,0.14);
   }
   .purchase-card{
     border-radius: 18px;
@@ -883,26 +920,28 @@
       '  // than one scale (big masses AND fine streaky texture), not one',
       '  // uniform puff size.',
       '  float eps = 0.035;',
-      '  float h  = fbm(p) + (fbm(p * 3.4 + 50.0) - 0.5) * 0.16;',
-      '  float hx = fbm(p + vec2(eps, 0.0)) + (fbm((p + vec2(eps,0.0)) * 3.4 + 50.0) - 0.5) * 0.16;',
-      '  float hy = fbm(p + vec2(0.0, eps)) + (fbm((p + vec2(0.0,eps)) * 3.4 + 50.0) - 0.5) * 0.16;',
+      '  float h  = fbm(p) + (fbm(p * 3.4 + 50.0) - 0.5) * 0.1;',
+      '  float hx = fbm(p + vec2(eps, 0.0)) + (fbm((p + vec2(eps,0.0)) * 3.4 + 50.0) - 0.5) * 0.1;',
+      '  float hy = fbm(p + vec2(0.0, eps)) + (fbm((p + vec2(0.0,eps)) * 3.4 + 50.0) - 0.5) * 0.1;',
       '  vec2 grad = vec2(hx - h, hy - h) / eps;',
-      '  vec3 normal = normalize(vec3(-grad * 1.6, 1.0));',
+      '  vec3 normal = normalize(vec3(-grad * 2.1, 1.0));',
       '  vec3 lightDir = normalize(vec3(-0.35, 0.55, 0.75));',
       '  float lambert = clamp(dot(normal, lightDir), 0.0, 1.0);',
       '',
-      '  // Distinct puffs, but not so selective the sky reads empty.',
-      '  float coverage = smoothstep(0.3, 0.4, h);',
+      '  // Tighter band than before: heaven clouds need a defined, sculpted',
+      '  // edge that reads as a puffy cumulus mass, not a soft/translucent',
+      '  // haze that reads as smoke.',
+      '  float coverage = smoothstep(0.38, 0.52, h);',
       '  if (coverage < 0.01) discard;',
       '',
   '  coverage *= envelopeMask;',
       '  if (coverage < 0.01) discard;',
       '',
-      '  vec3 litWhite  = vec3(0.99, 0.87, 0.85);',
-      '  vec3 shadowTone= vec3(0.68, 0.58, 0.72);',
-      '  vec3 color = mix(shadowTone, litWhite, lambert * 0.8 + 0.2);',
+      '  vec3 litWhite  = vec3(1.0, 0.99, 0.97);',
+      '  vec3 shadowTone= vec3(0.66, 0.77, 0.89);',
+      '  vec3 color = mix(shadowTone, litWhite, lambert * 0.75 + 0.25);',
       '',
-      '  float alpha = coverage * 0.95;',
+      '  float alpha = coverage;',
       '  gl_FragColor = vec4(color, alpha);',
       '}'
     ].join('\n');
@@ -1021,8 +1060,43 @@
     </div>
 
     <div class="hero-text" id="hero-text">
+      <svg class="hero-gate" viewBox="0 0 600 640" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="gateGold" x1="0" y1="0" x2="600" y2="640" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#8a6a1f"/>
+            <stop offset="0.45" stop-color="#ecc873"/>
+            <stop offset="1" stop-color="#a1741f"/>
+          </linearGradient>
+        </defs>
+        <path d="M60,620 L60,260 C60,120 165,20 300,20 C435,20 540,120 540,260 L540,620" stroke="url(#gateGold)" stroke-width="3"/>
+        <path d="M92,620 L92,270 C92,150 182,55 300,55 C418,55 508,150 508,270 L508,620" stroke="url(#gateGold)" stroke-width="1.4" opacity="0.8"/>
+        <circle cx="300" cy="20" r="7" fill="url(#gateGold)"/>
+        <path d="M300,4 L300,36 M284,20 L316,20" stroke="url(#gateGold)" stroke-width="1.4"/>
+        <g transform="translate(60,620)">
+          <g fill="#fbfaf5" stroke="url(#gateGold)" stroke-width="1.4">
+            <ellipse rx="15" ry="21" transform="rotate(0)"/>
+            <ellipse rx="15" ry="21" transform="rotate(60)"/>
+            <ellipse rx="15" ry="21" transform="rotate(120)"/>
+            <ellipse rx="15" ry="21" transform="rotate(180)"/>
+            <ellipse rx="15" ry="21" transform="rotate(240)"/>
+            <ellipse rx="15" ry="21" transform="rotate(300)"/>
+          </g>
+          <circle r="8" fill="url(#gateGold)"/>
+        </g>
+        <g transform="translate(540,620)">
+          <g fill="#fbfaf5" stroke="url(#gateGold)" stroke-width="1.4">
+            <ellipse rx="15" ry="21" transform="rotate(0)"/>
+            <ellipse rx="15" ry="21" transform="rotate(60)"/>
+            <ellipse rx="15" ry="21" transform="rotate(120)"/>
+            <ellipse rx="15" ry="21" transform="rotate(180)"/>
+            <ellipse rx="15" ry="21" transform="rotate(240)"/>
+            <ellipse rx="15" ry="21" transform="rotate(300)"/>
+          </g>
+          <circle r="8" fill="url(#gateGold)"/>
+        </g>
+      </svg>
       <div class="chapter-tag mono">CHAPTER 001</div>
-      <h1 class="display">REVELATION</h1>
+      <h1 class="display gold-text">GENESIS</h1>
       <div class="meta-line">CHAPTER 001 / PIECE 001 / MMXXVI</div>
     </div>
   </div>
@@ -1033,7 +1107,7 @@
 <section class="section-pad" id="product">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2>THE ARTIFACT</h2>
+      <h2 class="gold-text">THE ARTIFACT</h2>
       <div class="idx mono">01 — ARCHIVE</div>
     </div>
 
@@ -1041,12 +1115,12 @@
       <div class="plate glass reveal">
         <div class="p-idx">01 — CAMPAIGN</div>
         <div class="p-ph">CAMPAIGN IMAGE — PLACEHOLDER</div>
-        <div class="p-cap">Revelation, arrived.</div>
+        <div class="p-cap">Genesis, arrived.</div>
       </div>
       <div class="plate glass reveal">
         <div class="p-idx">02 — PIECE 001 / FRONT</div>
         <div class="p-ph">GARMENT IMAGE — FRONT — PLACEHOLDER</div>
-        <div class="p-cap">Revelation, worn.</div>
+        <div class="p-cap">Genesis, worn.</div>
       </div>
       <div class="plate glass reveal">
         <div class="p-idx">03 — DETAIL / FABRIC</div>
@@ -1077,8 +1151,8 @@
 
     <div class="product-row reveal" style="margin-top:80px;">
       <div>
-        <div class="product-title">PIECE 001</div>
-        <div class="product-sub mono">CHAPTER 001 — REVELATION</div>
+        <div class="product-title gold-text">PIECE 001</div>
+        <div class="product-sub mono">CHAPTER 001 — GENESIS</div>
         <p class="product-desc">A heavyweight garment-dyed tee, built as the first physical artifact of the archive. Bone cotton, oversized cut, the GLORIYAH mark small over the heart and carried whole across the back. Edition stitched with 111 — the number of this release, and no more. Printed. Boxed. Sealed. Once it's gone, the chapter closes.</p>
         <div class="spec-list">
           <div class="row"><span>MATERIAL</span><span>100% HEAVYWEIGHT COTTON, 280GSM</span></div>
@@ -1090,7 +1164,7 @@
       </div>
 
       <div class="purchase-card glass">
-        <div class="price mono">$33.33 <span style="font-size:0.9rem; color:var(--ash);">USD</span></div>
+        <div class="price mono gold-text">$33.33 <span style="font-size:0.9rem; color:var(--ash);">USD</span></div>
         <div class="edition">EDITION OF 111 — NO RESTOCK</div>
         <div class="size-row" id="size-row">
           <div class="size-pill" data-size="XS">XS</div>
@@ -1122,7 +1196,7 @@
 <section class="section-pad" id="music">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2>THE CHAPTER HAS A SOUND</h2>
+      <h2 class="gold-text">THE CHAPTER HAS A SOUND</h2>
       <div class="idx mono">02 — SOUND</div>
     </div>
 
@@ -1157,7 +1231,7 @@
 <section class="section-pad" id="film">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2>CHAPTER 001 — FILM</h2>
+      <h2 class="gold-text">CHAPTER 001 — FILM</h2>
       <div class="idx mono">03 — FILM</div>
     </div>
 
@@ -1177,7 +1251,7 @@
 <section class="section-pad" id="photography">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2>THE ARCHIVE, IN LIGHT</h2>
+      <h2 class="gold-text">THE ARCHIVE, IN LIGHT</h2>
       <div class="idx mono">04 — PHOTOGRAPHY</div>
     </div>
   </div>
@@ -1191,12 +1265,12 @@
 <section class="section-pad" id="chapters">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2>CHAPTERS</h2>
+      <h2 class="gold-text">CHAPTERS</h2>
       <div class="idx mono">05 — INDEX</div>
     </div>
 
     <div class="chapter-row glass reveal">
-      <div class="c-name">CHAPTER 001 — REVELATION</div>
+      <div class="c-name">CHAPTER 001 — GENESIS</div>
       <div class="c-status"><span class="dot"></span>AVAILABLE</div>
     </div>
     <div class="chapter-row sealed glass reveal">
@@ -1244,7 +1318,7 @@
       <div class="co-summary">
         <div class="co-thumb">PIECE 001</div>
         <div class="co-summary-info">
-          <div class="co-name">PIECE 001 — Revelation</div>
+          <div class="co-name">PIECE 001 — Genesis</div>
           <div class="co-meta mono" id="co-size-label">SIZE S · EDITION OF 111</div>
         </div>
         <div class="co-summary-price mono">$33.33</div>
