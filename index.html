@@ -23,8 +23,11 @@
        distinct from --ivory so the GENESIS title card (which explicitly
        still uses --ivory) is untouched by this. */
     --sky-pastel:#cfe7f6;
-    --ink:#26313e;
-    --ink-dim:#5c6b78;
+    /* Ink is warm bronze-gold, not neutral/cool — so body copy reads as
+       part of the same gold family as the accent and headline colors,
+       not a separate dark-navy palette sitting next to it. */
+    --ink:#3f2f10;
+    --ink-dim:#7d6a3f;
     --gold:#a1741f;
     --gold-bright:#c99a3c;
     --gold-light:#ecc873;
@@ -278,9 +281,27 @@
   }
   .hero-gate{
     position:absolute; left:50%; top:50%;
-    width:min(80vw, 580px); height:auto;
+    width:min(82vw, 600px); height:auto;
     transform: translate(-50%,-50%);
-    opacity:0.6;
+    opacity:0.94;
+    pointer-events:none;
+  }
+  /* A packed, lobed cloud floor the gate appears to rise out of — the
+     same billow/cauliflower idea as the WebGL sky, approximated with
+     layered soft blobs since this screen only needs to hold still for
+     a few seconds, not scroll. */
+  .hero-clouds{
+    position:absolute; left:-4%; right:-4%; bottom:-6%; height:30%;
+    background:
+      radial-gradient(ellipse 16% 62% at 6% 92%, rgba(255,255,255,0.96), transparent 72%),
+      radial-gradient(ellipse 20% 72% at 19% 98%, rgba(250,238,242,0.93), transparent 74%),
+      radial-gradient(ellipse 18% 66% at 33% 88%, rgba(255,255,255,0.96), transparent 72%),
+      radial-gradient(ellipse 22% 78% at 48% 98%, rgba(247,231,236,0.93), transparent 74%),
+      radial-gradient(ellipse 18% 66% at 63% 90%, rgba(255,255,255,0.96), transparent 72%),
+      radial-gradient(ellipse 20% 74% at 77% 98%, rgba(250,238,242,0.93), transparent 74%),
+      radial-gradient(ellipse 18% 64% at 91% 90%, rgba(255,255,255,0.96), transparent 72%),
+      linear-gradient(180deg, transparent 0%, rgba(255,250,242,0.92) 58%, rgba(248,233,222,0.98) 100%);
+    filter: blur(2px);
     pointer-events:none;
   }
   .hero-text .chapter-tag,
@@ -446,7 +467,12 @@
     transition: all 160ms ease;
   }
   .size-pill:hover{ border-color: var(--gold); color: var(--ink); }
-  .size-pill.active{ background: var(--ink); color: var(--ivory); border-color: var(--ink); }
+  .size-pill.active{
+    background: linear-gradient(115deg, #8a6a1f, #ecc873, #a1741f);
+    color: var(--void-deep);
+    border-color: transparent;
+    font-weight:600;
+  }
   .cta-btn{
     margin-top: 26px;
     width:100%;
@@ -867,12 +893,38 @@
       '  }',
       '  return v;',
       '}',
+      '// "Billow" folds ordinary noise into rounded ridges instead of',
+      '// smooth rolling hills — this is what actually reads as packed',
+      '// cauliflower/cotton-ball cumulus lobes rather than a soft haze.',
+      '// Stacked at increasing frequency it gives bumps-within-bumps,',
+      '// which is the real-world structure of a cumulus top.',
+      'float billow(vec2 p){',
+      '  return 1.0 - abs(noise(p) * 2.0 - 1.0);',
+      '}',
+      'float fbmBillow(vec2 p){',
+      '  float v = 0.0;',
+      '  float amp = 0.6;',
+      '  for (int i = 0; i < 4; i++){',
+      '    v += amp * billow(p);',
+      '    p *= 2.0;',
+      '    amp *= 0.5;',
+      '  }',
+      '  return v;',
+      '}',
       '',
       'void main(){',
       '  vec2 uv = gl_FragCoord.xy / uResolution.xy;',
       '  float aspect = uResolution.x / uResolution.y;',
       '  vec2 pEnvelope = vec2(uv.x * aspect, uv.y) * 1.15;',
       '  pEnvelope.y += uScroll * 0.0011;',
+      '',
+      '  // Vertical density bias, in VIEWPORT space (not document/scroll',
+      '  // space) so it always reads the same regardless of scroll depth:',
+      '  // a packed, near-solid cloud floor low in the frame, thinning to',
+      '  // open sky higher up — a cloud sea seen from just above it, which',
+      '  // is what the reference imagery actually looks like. gl_FragCoord',
+      '  // has y=0 at the bottom in WebGL, so low uv.y is the bottom edge.',
+      '  float vBias = 1.0 - smoothstep(0.0, 0.88, uv.y);',
       '',
       '  // Envelope: decides WHERE clouds are allowed to exist at all.',
       '  // Deliberately NOT driven by uTime, only scroll, so the',
@@ -882,16 +934,18 @@
       '  // occasional broad peaks spanning a whole screen — structurally',
       '  // impossible to fully prevent with a threshold alone. Single-',
       '  // octave noise has evenly bounded cell sizes, so no peak can',
-      '  // ever be wider than one cell, guaranteeing separation.',
+      '  // ever be wider than one cell, guaranteeing separation. The',
+      '  // vertical bias then relaxes that threshold near the bottom of',
+      '  // the viewport so cloud cover is much more common there — but',
+      '  // never guaranteed everywhere, so real gaps between masses still',
+      '  // survive even at the bottom, instead of fusing into one solid',
+      '  // painted-on sheet.',
       '  float envelope = noise(pEnvelope * 2.0);',
-      '  // Single-octave noise alone gives a smooth, almost circular',
-      '  // boundary — roughen just the edge with a higher-frequency wobble',
-      '  // so it reads as an irregular cloud outline, not a blob. This is',
-      '  // a small nudge on top of the bounding shape, not a new source of',
-      '  // large-scale structure, so it does not reintroduce merge risk.',
       '  envelope += (noise(pEnvelope * 9.0) - 0.5) * 0.14;',
       '  envelope += (noise(pEnvelope * 22.0) - 0.5) * 0.1;',
-      '  float envelopeMask = smoothstep(0.48, 0.62, envelope);',
+      '  float envLo = mix(0.54, 0.4, vBias);',
+      '  float envHi = mix(0.68, 0.56, vBias);',
+      '  float envelopeMask = smoothstep(envLo, envHi, envelope);',
       '  if (envelopeMask < 0.02) discard;',
       '',
       '  vec2 p = pEnvelope;',
@@ -905,41 +959,50 @@
       '  // affects detail/shape within an envelope region, never whether',
       '  // one exists there.',
       '  float scrollAbs = min(abs(uScrollVelocity), 60.0);',
-      '  float warpStrength = 0.55 + scrollAbs * 0.03;',
+      '  float warpStrength = 0.4 + scrollAbs * 0.025;',
       '  vec2 warpCoord = p * 0.8 + uTime * 0.035;',
       '  vec2 warp = vec2(fbm(warpCoord), fbm(warpCoord + vec2(5.2, 1.3))) - 0.5;',
       '  p += warp * warpStrength;',
       '',
-      '  // A single density/height field drives both the puff silhouette',
-      '  // AND its lighting — sampled at three nearby points so we can',
-      '  // estimate a surface normal from the local slope (cheap fake',
-      '  // bump-mapping). That gradient-based lighting is what actually',
-      '  // reads as round, bulging volume instead of flat mottled shading.',
-      '  // A second, smaller-scale wisp field adds organic edge detail —',
-      '  // real skies read as alive because they have detail at more',
-      '  // than one scale (big masses AND fine streaky texture), not one',
-      '  // uniform puff size.',
-      '  float eps = 0.035;',
-      '  float h  = fbm(p) + (fbm(p * 3.4 + 50.0) - 0.5) * 0.1;',
-      '  float hx = fbm(p + vec2(eps, 0.0)) + (fbm((p + vec2(eps,0.0)) * 3.4 + 50.0) - 0.5) * 0.1;',
-      '  float hy = fbm(p + vec2(0.0, eps)) + (fbm((p + vec2(0.0,eps)) * 3.4 + 50.0) - 0.5) * 0.1;',
+      '  // Height/density field, built from billow noise at two scales —',
+      '  // big cauliflower masses plus finer sub-lobe surface bumps — so',
+      '  // the silhouette itself is already lobed, not just its shading.',
+      '  // Sampled at three nearby points to estimate a surface normal',
+      '  // from the local slope (cheap fake bump-mapping); that gradient-',
+      '  // based lighting is what actually reads as round, bulging volume',
+      '  // rather than flat mottled shading.',
+      '  float eps = 0.03;',
+      '  float h  = fbmBillow(p) * 0.92 + billow(p * 2.4 + 50.0) * 0.3;',
+      '  float hx = fbmBillow(p + vec2(eps, 0.0)) * 0.92 + billow((p + vec2(eps,0.0)) * 2.4 + 50.0) * 0.3;',
+      '  float hy = fbmBillow(p + vec2(0.0, eps)) * 0.92 + billow((p + vec2(0.0,eps)) * 2.4 + 50.0) * 0.3;',
       '  vec2 grad = vec2(hx - h, hy - h) / eps;',
-      '  vec3 normal = normalize(vec3(-grad * 2.1, 1.0));',
+      '  vec3 normal = normalize(vec3(-grad * 2.4, 1.0));',
       '  vec3 lightDir = normalize(vec3(-0.35, 0.55, 0.75));',
       '  float lambert = clamp(dot(normal, lightDir), 0.0, 1.0);',
       '',
-      '  // Tighter band than before: heaven clouds need a defined, sculpted',
-      '  // edge that reads as a puffy cumulus mass, not a soft/translucent',
-      '  // haze that reads as smoke.',
-      '  float coverage = smoothstep(0.38, 0.52, h);',
+      '  // Coverage threshold follows the vertical bias only mildly: more',
+      '  // cloud low in the frame, but the band stays high and narrow',
+      '  // everywhere, so the valleys BETWEEN billow lobes actually drop',
+      '  // to zero coverage — real gaps, not just a darker shade of cloud.',
+      '  // That gap-vs-lobe separation is what reads as cauliflower rather',
+      '  // than a solid textured sheet.',
+      '  float covLo = mix(0.56, 0.48, vBias);',
+      '  float coverage = smoothstep(covLo, covLo + 0.09, h);',
       '  if (coverage < 0.01) discard;',
       '',
   '  coverage *= envelopeMask;',
       '  if (coverage < 0.01) discard;',
       '',
-      '  vec3 litWhite  = vec3(1.0, 0.99, 0.97);',
-      '  vec3 shadowTone= vec3(0.66, 0.77, 0.89);',
-      '  vec3 color = mix(shadowTone, litWhite, lambert * 0.75 + 0.25);',
+      '  // Extra darkening just above each gap (cheap ambient occlusion)',
+      '  // on top of the directional light — this is what separates',
+      '  // individual cauliflower florets from each other at their own',
+      '  // edges, instead of one smooth lit blob.',
+      '  float crevice = smoothstep(covLo, covLo + 0.22, h);',
+      '',
+      '  vec3 litWhite  = vec3(1.0, 0.98, 0.92);',
+      '  vec3 shadowTone= vec3(0.8, 0.68, 0.78);',
+      '  vec3 color = mix(shadowTone, litWhite, lambert * 0.72 + 0.28);',
+      '  color *= mix(0.7, 1.0, crevice);',
       '',
       '  float alpha = coverage;',
       '  gl_FragColor = vec4(color, alpha);',
@@ -1067,12 +1130,60 @@
             <stop offset="0.45" stop-color="#ecc873"/>
             <stop offset="1" stop-color="#a1741f"/>
           </linearGradient>
+          <linearGradient id="pillarShade" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#6e5217"/>
+            <stop offset="0.26" stop-color="#e8c46e"/>
+            <stop offset="0.5" stop-color="#fbe7ad"/>
+            <stop offset="0.74" stop-color="#d1a441"/>
+            <stop offset="1" stop-color="#6e5217"/>
+          </linearGradient>
+          <linearGradient id="doorShade" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#e8c46e" stop-opacity="0.6"/>
+            <stop offset="1" stop-color="#8a6a1f" stop-opacity="0.38"/>
+          </linearGradient>
         </defs>
-        <path d="M60,620 L60,260 C60,120 165,20 300,20 C435,20 540,120 540,260 L540,620" stroke="url(#gateGold)" stroke-width="3"/>
-        <path d="M92,620 L92,270 C92,150 182,55 300,55 C418,55 508,150 508,270 L508,620" stroke="url(#gateGold)" stroke-width="1.4" opacity="0.8"/>
-        <circle cx="300" cy="20" r="7" fill="url(#gateGold)"/>
-        <path d="M300,4 L300,36 M284,20 L316,20" stroke="url(#gateGold)" stroke-width="1.4"/>
-        <g transform="translate(60,620)">
+
+        <!-- connecting arch band, behind the pillars -->
+        <path d="M108,150 C108,60 190,10 300,10 C410,10 492,60 492,150" stroke="url(#gateGold)" stroke-width="11" stroke-linecap="round"/>
+        <path d="M108,150 C108,60 190,10 300,10 C410,10 492,60 492,150" stroke="#fbe7ad" stroke-width="3" stroke-linecap="round" opacity="0.75"/>
+
+        <!-- open gate doors, hinged at the pillars, swung outward with a
+             gap between them for the light to pour through -->
+        <g transform="rotate(-15 118 580)">
+          <rect x="118" y="192" width="150" height="388" rx="6" fill="url(#doorShade)" stroke="url(#gateGold)" stroke-width="2"/>
+          <line x1="118" y1="290" x2="268" y2="290" stroke="url(#gateGold)" stroke-width="1.3" opacity="0.8"/>
+          <line x1="118" y1="390" x2="268" y2="390" stroke="url(#gateGold)" stroke-width="1.3" opacity="0.8"/>
+          <line x1="118" y1="490" x2="268" y2="490" stroke="url(#gateGold)" stroke-width="1.3" opacity="0.8"/>
+          <line x1="193" y1="192" x2="193" y2="580" stroke="url(#gateGold)" stroke-width="1.3" opacity="0.8"/>
+        </g>
+        <g transform="rotate(15 482 580)">
+          <rect x="332" y="192" width="150" height="388" rx="6" fill="url(#doorShade)" stroke="url(#gateGold)" stroke-width="2"/>
+          <line x1="332" y1="290" x2="482" y2="290" stroke="url(#gateGold)" stroke-width="1.3" opacity="0.8"/>
+          <line x1="332" y1="390" x2="482" y2="390" stroke="url(#gateGold)" stroke-width="1.3" opacity="0.8"/>
+          <line x1="332" y1="490" x2="482" y2="490" stroke="url(#gateGold)" stroke-width="1.3" opacity="0.8"/>
+          <line x1="407" y1="192" x2="407" y2="580" stroke="url(#gateGold)" stroke-width="1.3" opacity="0.8"/>
+        </g>
+
+        <!-- left pillar: base, shaft, capital, finial — shaded for a
+             physical, cylindrical read instead of a flat outline -->
+        <g>
+          <rect x="30" y="558" width="94" height="36" rx="5" fill="url(#pillarShade)" stroke="url(#gateGold)" stroke-width="1.5"/>
+          <rect x="44" y="176" width="66" height="390" rx="7" fill="url(#pillarShade)" stroke="url(#gateGold)" stroke-width="1.5"/>
+          <rect x="34" y="148" width="86" height="32" rx="5" fill="url(#pillarShade)" stroke="url(#gateGold)" stroke-width="1.5"/>
+          <path d="M77,148 L77,114 M58,114 L96,114" stroke="url(#gateGold)" stroke-width="3.4" stroke-linecap="round"/>
+          <circle cx="77" cy="98" r="13" fill="url(#pillarShade)" stroke="url(#gateGold)" stroke-width="2"/>
+        </g>
+        <!-- right pillar (mirrored) -->
+        <g transform="translate(600,0) scale(-1,1)">
+          <rect x="30" y="558" width="94" height="36" rx="5" fill="url(#pillarShade)" stroke="url(#gateGold)" stroke-width="1.5"/>
+          <rect x="44" y="176" width="66" height="390" rx="7" fill="url(#pillarShade)" stroke="url(#gateGold)" stroke-width="1.5"/>
+          <rect x="34" y="148" width="86" height="32" rx="5" fill="url(#pillarShade)" stroke="url(#gateGold)" stroke-width="1.5"/>
+          <path d="M77,148 L77,114 M58,114 L96,114" stroke="url(#gateGold)" stroke-width="3.4" stroke-linecap="round"/>
+          <circle cx="77" cy="98" r="13" fill="url(#pillarShade)" stroke="url(#gateGold)" stroke-width="2"/>
+        </g>
+
+        <!-- roses at the base, outside the pillars -->
+        <g transform="translate(58,606)">
           <g fill="#fbfaf5" stroke="url(#gateGold)" stroke-width="1.4">
             <ellipse rx="15" ry="21" transform="rotate(0)"/>
             <ellipse rx="15" ry="21" transform="rotate(60)"/>
@@ -1083,7 +1194,7 @@
           </g>
           <circle r="8" fill="url(#gateGold)"/>
         </g>
-        <g transform="translate(540,620)">
+        <g transform="translate(542,606)">
           <g fill="#fbfaf5" stroke="url(#gateGold)" stroke-width="1.4">
             <ellipse rx="15" ry="21" transform="rotate(0)"/>
             <ellipse rx="15" ry="21" transform="rotate(60)"/>
@@ -1095,6 +1206,7 @@
           <circle r="8" fill="url(#gateGold)"/>
         </g>
       </svg>
+      <div class="hero-clouds" aria-hidden="true"></div>
       <div class="chapter-tag mono">CHAPTER 001</div>
       <h1 class="display gold-text">GENESIS</h1>
       <div class="meta-line">CHAPTER 001 / PIECE 001 / MMXXVI</div>
