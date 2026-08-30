@@ -14,7 +14,7 @@
     --void-deep:#050403;
     --hero-dim:#b9af9b;
     --hero-gold-bright:#e8c077;
-    --ash:#75695a;
+    --ash:#96731f;
 
     /* Everywhere else on the site — white/sky-blue heaven + gold theme. */
     --ivory:#fbfaf5;
@@ -27,7 +27,7 @@
        part of the same gold family as the accent and headline colors,
        not a separate dark-navy palette sitting next to it. */
     --ink:#3f2f10;
-    --ink-dim:#7d6a3f;
+    --ink-dim:#83601a;
     --gold:#a1741f;
     --gold-bright:#c99a3c;
     --gold-light:#ecc873;
@@ -762,7 +762,8 @@
     font-size: 10px;
     letter-spacing: 0.16em;
     color: var(--ink-dim);
-    border: 1px solid var(--line-strong);
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(161,116,31,0.45);
     border-radius: 999px;
     padding: 8px 16px;
     transition: all 160ms ease;
@@ -1028,7 +1029,12 @@
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    // Capping this well below the real devicePixelRatio (phones commonly
+    // report 3) leaves the canvas's backing store at a lower resolution
+    // than its displayed CSS size, so the browser upscales it and blurs
+    // every edge — a real contributor to clouds reading as soft/smoky on
+    // an actual phone screen, distinct from anything the shader math does.
+    var dpr = Math.min(window.devicePixelRatio || 1, 2.5);
     function resize(){
       var w = Math.floor(window.innerWidth * dpr);
       var h = Math.floor(window.innerHeight * dpr);
