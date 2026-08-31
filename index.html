@@ -43,8 +43,7 @@
   *{ box-sizing:border-box; }
   html,body{
     margin:0; padding:0;
-    background: linear-gradient(180deg, #eef7fc 0%, #d6ecf9 40%, #f7ecd8 100%);
-    background-attachment: fixed;
+    background: var(--ivory);
     color: var(--ink);
     width:100%;
     overflow-x:hidden;
@@ -148,17 +147,6 @@
   #preloader .digits span.on{ opacity:1; color: var(--gold-bright); }
   #preloader.hidden{ opacity:0; pointer-events:none; }
 
-  /* ---------- sky / clouds ----------
-     A fixed, full-page WebGL canvas behind everything past the hero —
-     the hero's own opaque background (and the GENESIS title card's)
-     fully covers it, so it only ever shows once you're into the actual
-     page. Real FBM noise-based volumetric clouds, not CSS shapes — see
-     the script block below for the shader. */
-  #cloud-canvas{
-    position:fixed; inset:0; z-index:0; pointer-events:none;
-    width:100%; height:100%; display:block;
-  }
-
   /* ---------- hero ---------- */
   .hero-wrap{
     position:relative;
@@ -253,72 +241,6 @@
   }
   @keyframes stemPulse{ 0%,100%{ opacity:0.3; } 50%{ opacity:1; } }
 
-  /* This is its own "page" — the eye+wings screen stays exactly as it
-     was, untouched; this overlay crossfades in as a solid ivory card
-     that fully covers it, showing CHAPTER 001 / GENESIS in gold. This is
-     the "ascension" moment — a pure light-flood reveal (sky gradient,
-     a bright core glow, and a slowly-turning gilt sunburst behind the
-     wordmark), no gate or clouds — those didn't read well and are gone. */
-  .hero-text{
-    position:absolute; inset:0;
-    overflow:hidden;
-    background:
-      radial-gradient(circle at 50% 42%, rgba(255,255,255,0.98) 0%, rgba(255,244,214,0.6) 20%, rgba(214,236,249,0.94) 46%, #eef7fc 72%),
-      linear-gradient(180deg, #eef7fc 0%, #d8ecf9 55%, #f5e9cd 100%);
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    text-align:center;
-    opacity:0;
-    pointer-events:none;
-  }
-  .hero-text::before{
-    /* slowly-turning gilt sunburst radiating from behind the wordmark —
-       a living light rather than a static graphic */
-    content:"";
-    position:absolute; left:50%; top:42%; width:140vmax; height:140vmax;
-    transform: translate(-50%,-50%);
-    background: repeating-conic-gradient(from 0deg, rgba(201,154,60,0.22) 0deg 3deg, transparent 3deg 11deg);
-    opacity:0.6;
-    pointer-events:none;
-    animation: gateRaysTurn 90s linear infinite;
-  }
-  .hero-text::after{
-    /* bright breathing core at the light's source */
-    content:"";
-    position:absolute; left:50%; top:42%; width:46vmax; height:46vmax;
-    transform: translate(-50%,-50%);
-    border-radius:50%;
-    background: radial-gradient(circle, rgba(255,251,238,0.9) 0%, rgba(255,244,214,0.35) 45%, transparent 74%);
-    pointer-events:none;
-    animation: gateGlowPulse 5s ease-in-out infinite;
-  }
-  @keyframes gateRaysTurn{ from{ transform: translate(-50%,-50%) rotate(0deg); } to{ transform: translate(-50%,-50%) rotate(360deg); } }
-  @keyframes gateGlowPulse{ 0%,100%{ opacity:0.75; } 50%{ opacity:1; } }
-  .hero-text .chapter-tag,
-  .hero-text h1,
-  .hero-text .meta-line{
-    position:relative; z-index:1;
-  }
-  .hero-text .chapter-tag{
-    font-family: var(--font-ui);
-    font-size: 12px;
-    letter-spacing: 0.4em;
-    color: var(--gold);
-    margin-bottom: 22px;
-  }
-  .hero-text h1{
-    font-family: var(--font-display);
-    font-weight:400;
-    font-size: clamp(3.6rem, 13vw, 9.5rem);
-    letter-spacing: 0.01em;
-  }
-  .hero-text .meta-line{
-    margin-top: 22px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.32em;
-    color: var(--gold);
-  }
-
   /* ---------- section scaffolding ---------- */
   section{ position:relative; }
   .section-pad{ padding: clamp(90px,14vh,160px) 0; }
@@ -342,31 +264,66 @@
   }
 
   /* ---------- plates (one-product story) ---------- */
-  .plate{
+  /* ---------- product gallery: one frame, swipe/click through all
+     images, instead of stacking every shot as its own full-width card
+     the visitor has to scroll past before reaching purchase info ---- */
+  .pdp-gallery{
     position:relative;
-    width:100%;
-    aspect-ratio: 16/10;
     border-radius: 16px;
     overflow:hidden;
+    aspect-ratio: 4/5;
+    touch-action: pan-y;
+  }
+  .pdp-slides{ position:relative; width:100%; height:100%; }
+  .pdp-slide{
+    position:absolute; inset:0;
     display:flex; flex-direction:column; justify-content:space-between;
     padding: 22px 26px;
-    margin-bottom: 20px;
+    opacity:0;
+    transition: opacity 380ms ease;
+    pointer-events:none;
   }
-  .plate .p-idx{ font-family: var(--font-mono); font-size:11px; letter-spacing:0.18em; color: var(--ink-dim); }
-  .plate .p-ph{
+  .pdp-slide.active{ opacity:1; pointer-events:auto; }
+  .pdp-slide .p-idx{ font-family: var(--font-mono); font-size:11px; letter-spacing:0.18em; color: var(--ink-dim); }
+  .pdp-slide .p-ph{
     align-self:center; margin:auto;
     font-family: var(--font-ui); font-size: 11px; letter-spacing:0.22em;
     color: var(--ash); text-align:center; text-transform:uppercase;
     border: 1px dashed var(--line-strong);
     padding: 10px 18px;
   }
-  .plate .p-cap{
+  .pdp-slide .p-cap{
     font-family: var(--font-display);
     font-style: italic;
     font-size: clamp(0.95rem, 1.6vw, 1.3rem);
     color: var(--ink-dim);
   }
-  .plate-grid{ display:grid; gap: 20px; }
+  .pdp-arrow{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:36px; height:36px; border-radius:50%;
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(161,116,31,0.4);
+    color: var(--ink);
+    font-size: 19px; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    transition: all 160ms ease;
+  }
+  .pdp-arrow:hover{ background: rgba(255,255,255,0.96); border-color: var(--gold); }
+  .pdp-prev{ left:14px; }
+  .pdp-next{ right:14px; }
+  .pdp-dots{
+    position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
+    display:flex; gap:8px;
+  }
+  .pdp-dot{
+    width:6px; height:6px; border-radius:50%;
+    background: rgba(161,116,31,0.32);
+    cursor:pointer;
+    transition: all 160ms ease;
+  }
+  .pdp-dot.active{ background: var(--gold); width:18px; border-radius:3px; }
+  @media (max-width:760px){ .pdp-arrow{ display:none; } }
 
   .product-row{
     display:grid;
@@ -570,41 +527,6 @@
     color:var(--gold-bright); text-align:center;
   }
   .co-submit-note.show{ opacity:1; max-height:60px; margin-top:14px; }
-
-  /* ---------- scripture ---------- */
-  .scripture-section{
-    min-height: 82vh;
-    display:flex; align-items:center; justify-content:center;
-    text-align:center;
-    padding: clamp(80px,16vh,180px) clamp(20px,6vw,80px);
-    background: radial-gradient(ellipse at 50% 50%, rgba(182,138,69,0.035), transparent 60%);
-  }
-  .scripture-inner .eyebrow{ margin-bottom: 40px; }
-  .scripture-verse{
-    font-family: var(--font-display);
-    font-style: italic;
-    font-weight: 300;
-    font-size: clamp(1.6rem, 4.2vw, 2.8rem);
-    color: var(--ink-dim);
-    max-width: 18ch;
-    margin: 0 auto;
-    line-height:1.4;
-  }
-  .scripture-ref{
-    margin-top:36px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.3em;
-    color: var(--gold);
-  }
-  .scripture-note{
-    margin-top:52px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    color: var(--ash);
-    opacity:0.7;
-  }
 
   /* ---------- music ---------- */
   .player{
@@ -822,267 +744,6 @@
 
 <div id="transition-veil"></div>
 
-<canvas id="cloud-canvas" aria-hidden="true"></canvas>
-
-<script>
-  // Procedural volumetric-style clouds — FBM (fractal) noise shader,
-  // not CSS shapes. Scroll position and elapsed time both feed into the
-  // noise sampling coordinate, so the cloud field genuinely drifts as
-  // you scroll (feels like moving through it) plus a slow ambient
-  // drift even at rest. A warm gold light source is baked into the
-  // shading (denser noise = cooler shadowed underside, thinner = warm
-  // lit edge), and low-density areas fade to fully transparent so the
-  // page's own ivory shows through as open sky.
-  (function(){
-    var canvas = document.getElementById('cloud-canvas');
-    if (!canvas) return;
-
-    var gl;
-    try {
-      gl = canvas.getContext('webgl', { antialias:true, alpha:true, premultipliedAlpha:false }) ||
-           canvas.getContext('experimental-webgl', { alpha:true, premultipliedAlpha:false });
-    } catch(e) { gl = null; }
-    if (!gl) return;
-
-    var VERT = [
-      'attribute vec2 aPos;',
-      'void main(){',
-      '  gl_Position = vec4(aPos, 0.0, 1.0);',
-      '}'
-    ].join('\n');
-
-    var FRAG = [
-      'precision highp float;',
-      'uniform vec2 uResolution;',
-      'uniform float uTime;',
-      'uniform float uScroll;',
-      'uniform float uScrollVelocity;',
-      '',
-      'float hash(vec2 p){',
-      '  p = fract(p * vec2(123.34, 456.21));',
-      '  p += dot(p, p + 45.32);',
-      '  return fract(p.x * p.y);',
-      '}',
-      'float noise(vec2 p){',
-      '  vec2 i = floor(p);',
-      '  vec2 f = fract(p);',
-      '  float a = hash(i);',
-      '  float b = hash(i + vec2(1.0,0.0));',
-      '  float c = hash(i + vec2(0.0,1.0));',
-      '  float d = hash(i + vec2(1.0,1.0));',
-      '  vec2 u = f*f*(3.0-2.0*f);',
-      '  return mix(a,b,u.x) + (c-a)*u.y*(1.0-u.x) + (d-b)*u.x*u.y;',
-      '}',
-      'float fbm(vec2 p){',
-      '  float v = 0.0;',
-      '  float amp = 0.52;',
-      '  for (int i = 0; i < 6; i++){',
-      '    v += amp * noise(p);',
-      '    p *= 2.03;',
-      '    amp *= 0.52;',
-      '  }',
-      '  return v;',
-      '}',
-      '// "Billow" folds ordinary noise into rounded ridges instead of',
-      '// smooth rolling hills — this is what actually reads as packed',
-      '// cauliflower/cotton-ball cumulus lobes rather than a soft haze.',
-      '// Stacked at increasing frequency it gives bumps-within-bumps,',
-      '// which is the real-world structure of a cumulus top.',
-      'float billow(vec2 p){',
-      '  return 1.0 - abs(noise(p) * 2.0 - 1.0);',
-      '}',
-      'float fbmBillow(vec2 p){',
-      '  float v = 0.0;',
-      '  float amp = 0.6;',
-      '  for (int i = 0; i < 4; i++){',
-      '    v += amp * billow(p);',
-      '    p *= 2.0;',
-      '    amp *= 0.5;',
-      '  }',
-      '  return v;',
-      '}',
-      '',
-      'void main(){',
-      '  vec2 uv = gl_FragCoord.xy / uResolution.xy;',
-      '  float aspect = uResolution.x / uResolution.y;',
-      '  vec2 pEnvelope = vec2(uv.x * aspect, uv.y) * 1.15;',
-      '  pEnvelope.y += uScroll * 0.0011;',
-      '',
-      '  // Envelope: decides WHERE individual clouds exist at all — like',
-      '  // a reference sheet of separate cartoon cloud puffs scattered',
-      '  // across open sky, NOT a continuous cover. Deliberately NOT',
-      '  // driven by uTime, only scroll, so the layout is stable rather',
-      '  // than constantly re-rolling. Deliberately single-octave value',
-      '  // noise, NOT fbm: multi-octave noise can combine into occasional',
-      '  // broad peaks spanning a whole screen — structurally impossible',
-      '  // to fully prevent with a threshold alone. Single-octave noise',
-      '  // has evenly bounded cell sizes, so no peak can ever be wider',
-      '  // than one cell. A coarse frequency plus a high, narrow threshold',
-      '  // band means only the clear local peaks pass — few, separated,',
-      '  // with generous open sky between them, not a packed floor.',
-      '  float envelope = noise(pEnvelope * 2.0);',
-      '  envelope += (noise(pEnvelope * 9.0) - 0.5) * 0.14;',
-      '  envelope += (noise(pEnvelope * 22.0) - 0.5) * 0.1;',
-      '  float envelopeMask = smoothstep(0.58, 0.7, envelope);',
-      '  if (envelopeMask < 0.02) discard;',
-      '',
-      '  vec2 p = pEnvelope;',
-      '  p.x += uTime * 0.006;',
-      '',
-      '  // Domain warp: an independent, constantly-evolving noise field',
-      '  // distorts where the fine cloud detail samples from, so puffs',
-      '  // actually churn and swirl over time instead of just sliding.',
-      '  // Scroll speed pumps extra energy into the warp, so scrolling',
-      '  // visibly stirs the field rather than only panning it. This only',
-      '  // affects detail/shape within an envelope region, never whether',
-      '  // one exists there.',
-      '  float scrollAbs = min(abs(uScrollVelocity), 60.0);',
-      '  float warpStrength = 0.4 + scrollAbs * 0.025;',
-      '  vec2 warpCoord = p * 0.8 + uTime * 0.035;',
-      '  vec2 warp = vec2(fbm(warpCoord), fbm(warpCoord + vec2(5.2, 1.3))) - 0.5;',
-      '  p += warp * warpStrength;',
-      '',
-      '  // Height/density field, built from billow noise at two scales —',
-      '  // big cauliflower masses plus finer sub-lobe surface bumps — so',
-      '  // the silhouette itself is already lobed, not just its shading.',
-      '  // Sampled at three nearby points to estimate a surface normal',
-      '  // from the local slope (cheap fake bump-mapping); that gradient-',
-      '  // based lighting is what actually reads as round, bulging volume',
-      '  // rather than flat mottled shading.',
-      '  float eps = 0.03;',
-      '  // Three CLEARLY separated scales (not four crowded-together',
-      '  // ones) so one or two big rounded lobes actually dominate the',
-      '  // read, with medium sub-bumps and only light fine grain on top —',
-      '  // too many competing similar-frequency octaves is what was',
-      '  // turning this into a marbled texture instead of a recognizable',
-      '  // puffy shape.',
-      '  float h  = billow(p) * 1.0 + billow(p * 2.6 + 50.0) * 0.42 + billow(p * 6.0 + 100.0) * 0.16;',
-      '  float hx = billow(p + vec2(eps,0.0)) * 1.0 + billow((p+vec2(eps,0.0)) * 2.6 + 50.0) * 0.42 + billow((p+vec2(eps,0.0)) * 6.0 + 100.0) * 0.16;',
-      '  float hy = billow(p + vec2(0.0,eps)) * 1.0 + billow((p+vec2(0.0,eps)) * 2.6 + 50.0) * 0.42 + billow((p+vec2(0.0,eps)) * 6.0 + 100.0) * 0.16;',
-      '  vec2 grad = vec2(hx - h, hy - h) / eps;',
-      '  vec3 normal = normalize(vec3(-grad * 3.0, 1.0));',
-      '  vec3 lightDir = normalize(vec3(-0.35, 0.55, 0.75));',
-      '  float lambert = clamp(dot(normal, lightDir), 0.0, 1.0);',
-      '',
-      '  // Coverage threshold follows the vertical bias only mildly: more',
-      '  // cloud low in the frame, but the band stays high and narrow',
-      '  // everywhere, so the valleys BETWEEN billow lobes actually drop',
-      '  // to zero coverage — real gaps, not just a darker shade of cloud.',
-      '  // That gap-vs-lobe separation is what reads as individual puffs',
-      '  // with a scalloped cartoon-cloud outline, not a textured sheet.',
-      '  // A narrow, fixed band (no vertical bias — the reference is an',
-      '  // evenly scattered field, not a denser-at-the-bottom sea) gives',
-      '  // each cloud a clean, crisp edge against open sky.',
-      '  float covLo = 0.5;',
-      '  float coverage = smoothstep(covLo, covLo + 0.07, h);',
-      '  if (coverage < 0.01) discard;',
-      '',
-  '  coverage *= envelopeMask;',
-      '  if (coverage < 0.01) discard;',
-      '',
-      '  // Mild extra darkening just above each gap (cheap ambient',
-      '  // occlusion) on top of the directional light — enough to outline',
-      '  // individual lobes within one cloud without going dramatic.',
-      '  float crevice = smoothstep(covLo, covLo + 0.18, h);',
-      '',
-      '  vec3 litWhite  = vec3(1.0, 0.98, 0.94);',
-      '  vec3 shadowTone= vec3(0.76, 0.82, 0.9);',
-      '  vec3 color = mix(shadowTone, litWhite, lambert * 0.7 + 0.3);',
-      '  color *= mix(0.85, 1.0, crevice);',
-      '',
-      '  float alpha = coverage;',
-      '  gl_FragColor = vec4(color, alpha);',
-      '}'
-    ].join('\n');
-
-    function compile(type, src){
-      var s = gl.createShader(type);
-      gl.shaderSource(s, src);
-      gl.compileShader(s);
-      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)){
-        console.error('cloud shader error', gl.getShaderInfoLog(s));
-        return null;
-      }
-      return s;
-    }
-
-    var vs = compile(gl.VERTEX_SHADER, VERT);
-    var fs = compile(gl.FRAGMENT_SHADER, FRAG);
-    if (!vs || !fs) return;
-
-    var prog = gl.createProgram();
-    gl.attachShader(prog, vs);
-    gl.attachShader(prog, fs);
-    gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)){
-      console.error('cloud program link error', gl.getProgramInfoLog(prog));
-      return;
-    }
-    gl.useProgram(prog);
-
-    var buf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
-    var aPos = gl.getAttribLocation(prog, 'aPos');
-    gl.enableVertexAttribArray(aPos);
-    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
-
-    var uResolution = gl.getUniformLocation(prog, 'uResolution');
-    var uTime = gl.getUniformLocation(prog, 'uTime');
-    var uScroll = gl.getUniformLocation(prog, 'uScroll');
-    var uScrollVelocity = gl.getUniformLocation(prog, 'uScrollVelocity');
-
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-    // Capping this well below the real devicePixelRatio (phones commonly
-    // report 3) leaves the canvas's backing store at a lower resolution
-    // than its displayed CSS size, so the browser upscales it and blurs
-    // every edge — a real contributor to clouds reading as soft/smoky on
-    // an actual phone screen, distinct from anything the shader math does.
-    var dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-    function resize(){
-      var w = Math.floor(window.innerWidth * dpr);
-      var h = Math.floor(window.innerHeight * dpr);
-      if (canvas.width !== w || canvas.height !== h){
-        canvas.width = w;
-        canvas.height = h;
-      }
-      gl.viewport(0, 0, canvas.width, canvas.height);
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    var running = true;
-    document.addEventListener('visibilitychange', function(){
-      running = !document.hidden;
-      if (running) requestAnimationFrame(draw);
-    });
-
-    var start = performance.now();
-    var lastScrollY = window.scrollY || window.pageYOffset || 0;
-    var lastFrameTime = start;
-    var smoothedVelocity = 0;
-    function draw(now){
-      if (!running) return;
-      var t = (now - start) / 1000;
-      var scrollY = window.scrollY || window.pageYOffset || 0;
-      var dt = Math.max(now - lastFrameTime, 1);
-      var instVelocity = (scrollY - lastScrollY) / dt * 16.6; // px per ~frame
-      smoothedVelocity += (instVelocity - smoothedVelocity) * 0.15;
-      lastScrollY = scrollY;
-      lastFrameTime = now;
-      gl.uniform2f(uResolution, canvas.width, canvas.height);
-      gl.uniform1f(uTime, t);
-      gl.uniform1f(uScroll, scrollY);
-      gl.uniform1f(uScrollVelocity, smoothedVelocity);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-      requestAnimationFrame(draw);
-    }
-    requestAnimationFrame(draw);
-  })();
-</script>
-
 <div id="sound-mini" role="button" aria-label="Toggle sound">
   <span class="m-dot"></span><span id="sound-mini-label">SOUND OFF</span>
 </div>
@@ -1112,12 +773,6 @@
         <div class="hero-tag" style="text-align:right; margin-left:auto;">MMXXVI</div>
       </div>
     </div>
-
-    <div class="hero-text" id="hero-text">
-      <div class="chapter-tag mono">CHAPTER 001</div>
-      <h1 class="display gold-text">GENESIS</h1>
-      <div class="meta-line">CHAPTER 001 / PIECE 001 / MMXXVI</div>
-    </div>
   </div>
 </div>
 
@@ -1126,49 +781,54 @@
 <section class="section-pad" id="product">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2 class="gold-text">THE ARTIFACT</h2>
+      <h2 class="gold-text">CHAPTER 1: GENESIS</h2>
       <div class="idx mono">01 — ARCHIVE</div>
     </div>
 
-    <div class="plate-grid">
-      <div class="plate glass reveal">
-        <div class="p-idx">01 — CAMPAIGN</div>
-        <div class="p-ph">CAMPAIGN IMAGE — PLACEHOLDER</div>
-        <div class="p-cap">Genesis, arrived.</div>
+    <div class="product-row reveal">
+      <div class="pdp-gallery glass" id="pdp-gallery">
+        <div class="pdp-slides" id="pdp-slides">
+          <div class="pdp-slide active">
+            <div class="p-idx">01 — CAMPAIGN</div>
+            <div class="p-ph">CAMPAIGN IMAGE — PLACEHOLDER</div>
+            <div class="p-cap">Genesis, arrived.</div>
+          </div>
+          <div class="pdp-slide">
+            <div class="p-idx">02 — PIECE 001 / FRONT</div>
+            <div class="p-ph">GARMENT IMAGE — FRONT — PLACEHOLDER</div>
+            <div class="p-cap">Genesis, worn.</div>
+          </div>
+          <div class="pdp-slide">
+            <div class="p-idx">03 — DETAIL / FABRIC</div>
+            <div class="p-ph">FABRIC DETAIL — PLACEHOLDER</div>
+            <div class="p-cap">Heavyweight cotton. Garment-dyed. Bone.</div>
+          </div>
+          <div class="pdp-slide">
+            <div class="p-idx">04 — DETAIL / GRAPHIC</div>
+            <div class="p-ph">GRAPHIC DETAIL — PLACEHOLDER</div>
+            <div class="p-cap">Bound in place. Marked in orbit.</div>
+          </div>
+          <div class="pdp-slide">
+            <div class="p-idx">05 — PIECE 001 / BACK</div>
+            <div class="p-ph">GARMENT IMAGE — BACK — PLACEHOLDER</div>
+            <div class="p-cap">The weight of it, worn whole.</div>
+          </div>
+          <div class="pdp-slide">
+            <div class="p-idx">06 — EDITORIAL</div>
+            <div class="p-ph">MODEL STUDY — PLACEHOLDER</div>
+            <div class="p-cap">Worn in the open. Nothing hidden.</div>
+          </div>
+          <div class="pdp-slide">
+            <div class="p-idx">07 — ARCHIVE / CLOSE</div>
+            <div class="p-ph">CLOSING IMAGE — PLACEHOLDER</div>
+            <div class="p-cap">Chapter 001 closes here. The next is sealed.</div>
+          </div>
+        </div>
+        <button class="pdp-arrow pdp-prev" id="pdp-prev" aria-label="Previous image">&#8249;</button>
+        <button class="pdp-arrow pdp-next" id="pdp-next" aria-label="Next image">&#8250;</button>
+        <div class="pdp-dots" id="pdp-dots"></div>
       </div>
-      <div class="plate glass reveal">
-        <div class="p-idx">02 — PIECE 001 / FRONT</div>
-        <div class="p-ph">GARMENT IMAGE — FRONT — PLACEHOLDER</div>
-        <div class="p-cap">Genesis, worn.</div>
-      </div>
-      <div class="plate glass reveal">
-        <div class="p-idx">03 — DETAIL / FABRIC</div>
-        <div class="p-ph">FABRIC DETAIL — PLACEHOLDER</div>
-        <div class="p-cap">Heavyweight cotton. Garment-dyed. Bone.</div>
-      </div>
-      <div class="plate glass reveal">
-        <div class="p-idx">04 — DETAIL / GRAPHIC</div>
-        <div class="p-ph">GRAPHIC DETAIL — PLACEHOLDER</div>
-        <div class="p-cap">Bound in place. Marked in orbit.</div>
-      </div>
-      <div class="plate glass reveal">
-        <div class="p-idx">05 — PIECE 001 / BACK</div>
-        <div class="p-ph">GARMENT IMAGE — BACK — PLACEHOLDER</div>
-        <div class="p-cap">The weight of it, worn whole.</div>
-      </div>
-      <div class="plate glass reveal">
-        <div class="p-idx">06 — EDITORIAL</div>
-        <div class="p-ph">MODEL STUDY — PLACEHOLDER</div>
-        <div class="p-cap">Worn in the open. Nothing hidden.</div>
-      </div>
-      <div class="plate glass reveal">
-        <div class="p-idx">07 — ARCHIVE / CLOSE</div>
-        <div class="p-ph">CLOSING IMAGE — PLACEHOLDER</div>
-        <div class="p-cap">Chapter 001 closes here. The next is sealed.</div>
-      </div>
-    </div>
 
-    <div class="product-row reveal" style="margin-top:80px;">
       <div>
         <div class="product-title gold-text">PIECE 001</div>
         <div class="product-sub mono">CHAPTER 001 — GENESIS</div>
@@ -1180,33 +840,22 @@
           <div class="row"><span>EDITION</span><span>111 UNITS</span></div>
           <div class="row"><span>ORIGIN</span><span>CHAPTER 001 — MMXXVI</span></div>
         </div>
-      </div>
 
-      <div class="purchase-card glass">
-        <div class="price mono gold-text">$33.33 <span style="font-size:0.9rem; color:var(--ash);">USD</span></div>
-        <div class="edition">EDITION OF 111 — NO RESTOCK</div>
-        <div class="size-row" id="size-row">
-          <div class="size-pill" data-size="XS">XS</div>
-          <div class="size-pill active" data-size="S">S</div>
-          <div class="size-pill" data-size="M">M</div>
-          <div class="size-pill" data-size="L">L</div>
-          <div class="size-pill" data-size="XL">XL</div>
+        <div class="purchase-card glass">
+          <div class="price mono gold-text">$33.33 <span style="font-size:0.9rem; color:var(--ash);">USD</span></div>
+          <div class="edition">EDITION OF 111 — NO RESTOCK</div>
+          <div class="size-row" id="size-row">
+            <div class="size-pill" data-size="XS">XS</div>
+            <div class="size-pill active" data-size="S">S</div>
+            <div class="size-pill" data-size="M">M</div>
+            <div class="size-pill" data-size="L">L</div>
+            <div class="size-pill" data-size="XL">XL</div>
+          </div>
+          <button class="cta-btn" id="add-cart-btn">ADD PIECE 001 TO CART</button>
+          <div class="cta-note">SHIPS WORLDWIDE. NO RESTOCK. NO SECOND RUN.</div>
         </div>
-        <button class="cta-btn" id="add-cart-btn">ADD PIECE 001 TO CART</button>
-        <div class="cta-note">SHIPS WORLDWIDE. NO RESTOCK. NO SECOND RUN.</div>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- ============================================================= -->
-<!-- SCRIPTURE -->
-<section class="scripture-section" id="scripture">
-  <div class="scripture-inner reveal">
-    <div class="eyebrow">SCRIPTURE</div>
-    <div class="scripture-verse">[ VERSE PLACEHOLDER ]</div>
-    <div class="scripture-ref mono">— BOOK X : X —</div>
-    <div class="scripture-note mono">TEXT WITHHELD PENDING FINAL ARTWORK</div>
   </div>
 </section>
 
@@ -1411,12 +1060,11 @@
 
   /* ================================================================
      REVEAL — the eye IS the page until you act on it. Scrolling is
-     locked; only a deliberate tap disperses it, once, into the artifact
-     below. This is a single held moment, not something scrubbed by
-     scroll position.
+     locked; only a deliberate tap disperses it, once, straight into the
+     storefront. No held title card in between — the eye disperses and
+     you're in, quickly, so nothing stands between a visitor and buying.
      ================================================================ */
   var heroUi = document.getElementById('hero-ui');
-  var heroText = document.getElementById('hero-text');
   var revealed = false;
 
   // nothing scrolls until the being has been entered
@@ -1444,9 +1092,10 @@
     return p < 0.5 ? 4*p*p*p : 1 - Math.pow(-2*p+2, 3)/2;
   }
 
-  // a deliberate cut: fade to black, jump while hidden (letting the
-  // artifact's own sections quietly unveil themselves behind the veil),
-  // then fade up onto the fully-arrived, already-unveiling page
+  // a quick, smooth cut: brief fade, jump while hidden (letting the
+  // storefront's own reveal transitions finish underneath), then fade
+  // up onto the fully-arrived page — fast enough that it never reads as
+  // a loading screen or a detour before the store.
   var veil = document.getElementById('transition-veil');
   function veilCutTo(targetY){
     if (reduceMotion) {
@@ -1460,11 +1109,8 @@
       window.scrollTo(0, targetY);
       htmlEl.style.overflow = prevHtmlOverflow;
       document.body.style.overflow = prevBodyOverflow;
-      // hold black just long enough for the arriving section's own
-      // reveal transitions to finish underneath, so lifting the veil
-      // shows a fully composed scene, not something still fading in
-      setTimeout(function(){ veil.classList.remove('on'); }, 1300);
-    }, 900);
+      setTimeout(function(){ veil.classList.remove('on'); }, 500);
+    }, 380);
   }
 
   function triggerReveal(){
@@ -1473,27 +1119,20 @@
     heroUi.classList.add('fading');
 
     var start = performance.now();
-    // slow and deliberate — this is the one moment the whole site turns on
-    var duration = reduceMotion ? 500 : 5200;
-    var holdMs = reduceMotion ? 0 : 1400;
+    // quick and smooth — the eye disperses, then straight into the store,
+    // no held title screen in between
+    var duration = reduceMotion ? 250 : 700;
 
     (function anim(now){
       now = now || performance.now();
       var raw = Math.min(1, (now - start) / duration);
       var p = easeInOutCubic(raw);
       if (window.__setAngelScatter) window.__setAngelScatter(p);
-      var textP = Math.max(0, Math.min(1, (p - 0.5) / 0.42));
-      heroText.style.opacity = String(textP);
-      heroText.style.transform = 'translateY(' + (14*(1-textP)) + 'px) scale(' + (0.94+0.06*textP) + ')';
       if (raw < 1) {
         requestAnimationFrame(anim);
       } else {
-        // hold the fully-revealed title for a beat before carrying the
-        // visitor on — the pause is the drama
-        setTimeout(function(){
-          var product = document.getElementById('product');
-          if (product) veilCutTo(product.getBoundingClientRect().top + window.scrollY);
-        }, holdMs);
+        var product = document.getElementById('product');
+        if (product) veilCutTo(product.getBoundingClientRect().top + window.scrollY);
       }
     })();
   }
@@ -2230,6 +1869,50 @@
   }
 
   /* ================================================================
+     PRODUCT GALLERY — one frame, all images live inside it; click the
+     arrows or the dots, or swipe on mobile, instead of scrolling past
+     a wall of full-width plates before reaching the purchase details.
+     ================================================================ */
+  (function setupGallery(){
+    var galleryEl = document.getElementById('pdp-gallery');
+    var slidesEl = document.getElementById('pdp-slides');
+    if (!galleryEl || !slidesEl) return;
+    var slides = Array.prototype.slice.call(slidesEl.querySelectorAll('.pdp-slide'));
+    if (!slides.length) return;
+    var dotsEl = document.getElementById('pdp-dots');
+    var idx = 0;
+
+    slides.forEach(function(s, i){
+      var dot = document.createElement('div');
+      dot.className = 'pdp-dot' + (i === 0 ? ' active' : '');
+      dot.addEventListener('click', function(){ go(i); });
+      dotsEl.appendChild(dot);
+    });
+    var dots = Array.prototype.slice.call(dotsEl.children);
+
+    function go(i){
+      idx = (i + slides.length) % slides.length;
+      slides.forEach(function(s, si){ s.classList.toggle('active', si === idx); });
+      dots.forEach(function(d, di){ d.classList.toggle('active', di === idx); });
+    }
+
+    var prevBtn = document.getElementById('pdp-prev');
+    var nextBtn = document.getElementById('pdp-next');
+    if (prevBtn) prevBtn.addEventListener('click', function(){ go(idx - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function(){ go(idx + 1); });
+
+    // swipe, for mobile — a plain horizontal drag past a small threshold
+    var startX = null;
+    galleryEl.addEventListener('touchstart', function(e){ startX = e.touches[0].clientX; }, {passive:true});
+    galleryEl.addEventListener('touchend', function(e){
+      if (startX === null) return;
+      var dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 40) go(idx + (dx < 0 ? 1 : -1));
+      startX = null;
+    }, {passive:true});
+  })();
+
+  /* ================================================================
      PRODUCT INTERACTIONS
      ================================================================ */
   var sizeRow = document.getElementById('size-row');
@@ -2363,13 +2046,12 @@
   });
 
   /* ================================================================
-     SCROLL REVEAL — nothing past the hero is pre-shown; every section,
-     plate, and row unveils itself as the visitor arrives at it, with a
-     cascading stagger through grouped items (plates, chapter rows).
+     SCROLL REVEAL — nothing past the hero is pre-shown; every section
+     and row unveils itself as the visitor arrives at it, with a
+     cascading stagger through grouped items (chapter rows).
      ================================================================ */
   (function setupScrollReveal(){
-    var groups = [document.querySelectorAll('.plate-grid > .reveal'),
-                  document.querySelectorAll('#chapters .chapter-row')];
+    var groups = [document.querySelectorAll('#chapters .chapter-row')];
     groups.forEach(function(list){
       list.forEach(function(el, i){ el.style.transitionDelay = Math.min(i*90, 360) + 'ms'; });
     });
