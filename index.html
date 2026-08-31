@@ -1126,8 +1126,8 @@
     veil.classList.add('on');
     setTimeout(function(){
       finish();
-      setTimeout(function(){ veil.classList.remove('on'); }, 550);
-    }, 420);
+      setTimeout(function(){ veil.classList.remove('on'); }, 1300);
+    }, 900);
   }
 
   function triggerReveal(){
@@ -1136,9 +1136,10 @@
     heroUi.classList.add('fading');
 
     var start = performance.now();
-    // smooth and deliberate, but no held title screen and no multi-second
-    // cinematic hold — the eye disperses, then straight into the store
-    var duration = reduceMotion ? 250 : 1400;
+    // back to the original, slow and deliberate scatter speed — no held
+    // title screen anymore, but the dispersal itself keeps its original
+    // unhurried pace rather than the sped-up version
+    var duration = reduceMotion ? 500 : 5200;
 
     (function anim(now){
       now = now || performance.now();
