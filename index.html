@@ -207,22 +207,17 @@
     color: var(--gold);
     text-align:right;
   }
+  /* Moved down to the bottom of the frame, grouped with the MMXXVI tag,
+     instead of sitting centered over the eye — that let it block the
+     artwork no matter what backing it had. Down here the eye and wings
+     are fully clear; a light text-shadow is enough on its own. */
+  .hero-bottom{
+    display:flex; flex-direction:column; align-items:center; gap:16px;
+  }
+  .hero-bottom .row{ width:100%; align-self:stretch; }
   .hero-mid{
     align-self:center;
     text-align:center;
-    /* the eye/wings artwork is busiest exactly where this text sits —
-       no single text color stays legible against both its black gaps
-       and its bright particle clusters, so it needs real separation
-       from the art, not just a color choice. A soft dark scrim plus a
-       tight shadow on the letters does that without touching the eye
-       artwork or its particle system at all. */
-    /* no backdrop-filter — this sits over a continuously-animating
-       WebGL canvas, and blurring that every frame is what caused real
-       hangs elsewhere in this project. A plain solid-ish scrim gets
-       the same separation without re-blurring a moving image. */
-    background: rgba(5,4,3,0.6);
-    border-radius: 999px;
-    padding: 14px 26px;
   }
   .move-cue{
     font-family: var(--font-ui);
@@ -774,18 +769,20 @@
         <div class="hero-tag">CHAPTER 001</div>
         <div class="hero-triples mono">111 / 444 / 777</div>
       </div>
-      <div class="hero-mid">
-        <div class="move-cue">
-          <span class="mouse">MOVE TO BE SEEN</span>
-          <span class="touch">TOUCH TO BE SEEN</span>
+      <div class="hero-bottom">
+        <div class="hero-mid">
+          <div class="move-cue">
+            <span class="mouse">MOVE TO BE SEEN</span>
+            <span class="touch">TOUCH TO BE SEEN</span>
+          </div>
+          <div class="move-sub">
+            <span class="mouse">DRAG TO TURN — CLICK TO ENTER</span>
+            <span class="touch">DRAG TO TURN — TAP TO ENTER</span>
+          </div>
         </div>
-        <div class="move-sub">
-          <span class="mouse">DRAG TO TURN — CLICK TO ENTER</span>
-          <span class="touch">DRAG TO TURN — TAP TO ENTER</span>
+        <div class="row" style="align-items:flex-end;">
+          <div class="hero-tag" style="text-align:right; margin-left:auto;">MMXXVI</div>
         </div>
-      </div>
-      <div class="row" style="align-items:flex-end;">
-        <div class="hero-tag" style="text-align:right; margin-left:auto;">MMXXVI</div>
       </div>
     </div>
   </div>
