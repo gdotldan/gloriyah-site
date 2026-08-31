@@ -210,12 +210,26 @@
   .hero-mid{
     align-self:center;
     text-align:center;
+    /* the eye/wings artwork is busiest exactly where this text sits —
+       no single text color stays legible against both its black gaps
+       and its bright particle clusters, so it needs real separation
+       from the art, not just a color choice. A soft dark scrim plus a
+       tight shadow on the letters does that without touching the eye
+       artwork or its particle system at all. */
+    /* no backdrop-filter — this sits over a continuously-animating
+       WebGL canvas, and blurring that every frame is what caused real
+       hangs elsewhere in this project. A plain solid-ish scrim gets
+       the same separation without re-blurring a moving image. */
+    background: rgba(5,4,3,0.6);
+    border-radius: 999px;
+    padding: 14px 26px;
   }
   .move-cue{
     font-family: var(--font-ui);
     font-size: 11px;
     letter-spacing: 0.38em;
-    color: var(--ash);
+    color: var(--hero-gold-bright);
+    text-shadow: 0 0 8px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.9);
   }
   .move-cue .touch{ display:none; }
   .move-sub{
@@ -223,8 +237,9 @@
     font-family: var(--font-mono);
     font-size: 9.5px;
     letter-spacing: 0.22em;
-    color: var(--ash);
-    opacity: 0.6;
+    color: var(--hero-dim);
+    text-shadow: 0 0 8px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.9);
+    opacity: 0.85;
   }
   .move-sub .touch{ display:none; }
   .scroll-cue{
@@ -1097,20 +1112,25 @@
   // up onto the fully-arrived page — fast enough that it never reads as
   // a loading screen or a detour before the store.
   var veil = document.getElementById('transition-veil');
-  function veilCutTo(targetY){
-    if (reduceMotion) {
-      window.scrollTo(0, targetY);
+  // The hero is a normal 100vh block sitting above the storefront in
+  // document flow — once you've entered, collapse it out of the layout
+  // entirely (while the veil is fully opaque, so the swap is invisible)
+  // so there is nothing left above the storefront to scroll back up
+  // into. Landing position becomes simply the top of the page.
+  var heroWrap = document.getElementById('hero-wrap');
+  function veilCutTo(){
+    function finish(){
+      heroWrap.style.display = 'none';
+      window.scrollTo(0, 0);
       htmlEl.style.overflow = prevHtmlOverflow;
       document.body.style.overflow = prevBodyOverflow;
-      return;
     }
+    if (reduceMotion) { finish(); return; }
     veil.classList.add('on');
     setTimeout(function(){
-      window.scrollTo(0, targetY);
-      htmlEl.style.overflow = prevHtmlOverflow;
-      document.body.style.overflow = prevBodyOverflow;
-      setTimeout(function(){ veil.classList.remove('on'); }, 500);
-    }, 380);
+      finish();
+      setTimeout(function(){ veil.classList.remove('on'); }, 550);
+    }, 420);
   }
 
   function triggerReveal(){
@@ -1119,9 +1139,9 @@
     heroUi.classList.add('fading');
 
     var start = performance.now();
-    // quick and smooth — the eye disperses, then straight into the store,
-    // no held title screen in between
-    var duration = reduceMotion ? 250 : 700;
+    // smooth and deliberate, but no held title screen and no multi-second
+    // cinematic hold — the eye disperses, then straight into the store
+    var duration = reduceMotion ? 250 : 1400;
 
     (function anim(now){
       now = now || performance.now();
@@ -1131,8 +1151,7 @@
       if (raw < 1) {
         requestAnimationFrame(anim);
       } else {
-        var product = document.getElementById('product');
-        if (product) veilCutTo(product.getBoundingClientRect().top + window.scrollY);
+        veilCutTo();
       }
     })();
   }
