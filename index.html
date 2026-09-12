@@ -10,10 +10,12 @@
 <style>
   .brand-header{
     display:none;
-    position:sticky;
+    position:fixed;
     top:0;
+    left:0;
+    right:0;
     z-index:50;
-    min-height:72px;
+    min-height:calc(72px + env(safe-area-inset-top, 0px));
     padding:env(safe-area-inset-top, 0px) 24px 0;
     align-items:center;
     justify-content:center;
@@ -21,9 +23,10 @@
     border-bottom:1px solid rgba(63,47,16,.12);
   }
   .store-entered .brand-header{ display:flex; }
+  body.store-entered{ padding-top:calc(72px + env(safe-area-inset-top, 0px)); }
   .brand-header a{ display:flex; align-items:center; gap:12px; min-height:56px; padding:8px; }
-  /* Original SVG silhouettes, gilded only in the header; source assets stay black. */
-  .brand-header .brand-mark{
+  /* Original SVG silhouettes with matching gilt; source assets stay black. */
+  .brand-header .brand-mark, .footer-brand{
     display:block;
     background:linear-gradient(115deg, #8a6a1f 0%, #c99a3c 24%, #f2d68f 48%, #a1741f 66%, #ecc873 84%, #8a6a1f 100%);
     background-size:220% 100%;
@@ -33,10 +36,11 @@
   .brand-emblem{ width:40px; height:40px; --brand-mask:url('/assets/brand/gloriyah-emblem.svg'); }
   .brand-wordmark{ width:210px; height:17px; --brand-mask:url('/assets/brand/gloriyah-wordmark.svg'); }
   .brand-header a:focus-visible{ outline:2px solid #a1741f; outline-offset:4px; }
-  .footer-brand{ display:block; width:140px; height:auto; margin:0 auto 36px; }
+  .footer-brand{ display:block; width:140px; aspect-ratio:816 / 884; margin:0 auto 36px; --brand-mask:url('/assets/brand/gloriyah-logo.svg'); }
   #product{ scroll-margin-top:88px; }
   @media(max-width:600px){
-    .brand-header{ min-height:60px; }
+    .brand-header{ min-height:calc(60px + env(safe-area-inset-top, 0px)); }
+    body.store-entered{ padding-top:calc(60px + env(safe-area-inset-top, 0px)); }
     .brand-header .brand-wordmark{ width:174px; height:14px; }
     .brand-header .brand-emblem{ width:32px; height:32px; }
   }
@@ -1004,7 +1008,7 @@
 <!-- ============================================================= -->
 <footer>
   <div class="wrap">
-    <img class="footer-brand" src="/assets/brand/gloriyah-logo.svg" alt="GLORIYAH orbital emblem and wordmark" width="816" height="884" loading="lazy">
+    <span class="footer-brand" role="img" aria-label="GLORIYAH orbital emblem and wordmark"></span>
     <div class="eyebrow">FOLLOW THE ARCHIVE</div>
     <div class="follow-row reveal">
       <a href="#" onclick="return false">INSTAGRAM</a>
