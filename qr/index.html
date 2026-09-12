@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+
+  <!--
+    PERMANENT GLORIYAH QR ENDPOINT
+
+    Physical QR codes point to https://gloriyah.com/qr. Do not rename or
+    remove the /qr route after those codes have been distributed.
+
+    To change the final destination later, update BOTH lines marked
+    QR_DESTINATION below and keep their URLs identical.
+  -->
+  <meta http-equiv="refresh" content="0; url=https://gloriyah.com/"> <!-- QR_DESTINATION 1 -->
+  <link rel="canonical" href="https://gloriyah.com/qr">
+
+  <title>Redirecting to GLORIYAH</title>
+</head>
+<body>
+  <p>
+    Redirecting to
+    <a id="qr-destination" href="https://gloriyah.com/">GLORIYAH</a>. <!-- QR_DESTINATION 2 -->
+  </p>
+
+  <script>
+    // JavaScript fallback for browsers that do not honor the meta refresh.
+    const destination = document.getElementById('qr-destination').href;
+    const normalize = (url) => {
+      const parsed = new URL(url);
+      const path = parsed.pathname.replace(/\/+$/, '') || '/';
+      return `${parsed.origin}${path}${parsed.search}${parsed.hash}`;
+    };
+
+    if (normalize(window.location.href) !== normalize(destination)) {
+      window.location.replace(destination);
+    }
+  </script>
+</body>
+</html>
