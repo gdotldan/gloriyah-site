@@ -1,11 +1,45 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Chapter 001 — Genesis</title>
+<title>GLORIYAH — Chapter 1: Genesis</title>
+<link rel="icon" href="/assets/brand/favicon.ico" sizes="any">
+<link rel="icon" href="/assets/brand/gloriyah-emblem.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=Archivo:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
+  .brand-header{
+    display:none;
+    position:sticky;
+    top:0;
+    z-index:50;
+    min-height:72px;
+    padding:env(safe-area-inset-top, 0px) 24px 0;
+    align-items:center;
+    justify-content:center;
+    background:#fbfaf5;
+    border-bottom:1px solid rgba(63,47,16,.12);
+  }
+  .store-entered .brand-header{ display:flex; }
+  .brand-header a{ display:flex; align-items:center; gap:12px; min-height:56px; padding:8px; }
+  /* Original SVG silhouettes, gilded only in the header; source assets stay black. */
+  .brand-header .brand-mark{
+    display:block;
+    background:linear-gradient(115deg, #8a6a1f 0%, #c99a3c 24%, #f2d68f 48%, #a1741f 66%, #ecc873 84%, #8a6a1f 100%);
+    background-size:220% 100%;
+    -webkit-mask:var(--brand-mask) center / contain no-repeat;
+    mask:var(--brand-mask) center / contain no-repeat;
+  }
+  .brand-emblem{ width:40px; height:40px; --brand-mask:url('/assets/brand/gloriyah-emblem.svg'); }
+  .brand-wordmark{ width:210px; height:17px; --brand-mask:url('/assets/brand/gloriyah-wordmark.svg'); }
+  .brand-header a:focus-visible{ outline:2px solid #a1741f; outline-offset:4px; }
+  .footer-brand{ display:block; width:140px; height:auto; margin:0 auto 36px; }
+  #product{ scroll-margin-top:88px; }
+  @media(max-width:600px){
+    .brand-header{ min-height:60px; }
+    .brand-header .brand-wordmark{ width:174px; height:14px; }
+    .brand-header .brand-emblem{ width:32px; height:32px; }
+  }
   :root{
     /* Hero centerpiece only — the eye+wings glow is additive-blended and
        physically needs a dark backdrop to read. Kept exactly as before;
@@ -790,6 +824,12 @@
 
 <!-- ============================================================= -->
 <!-- ONE-PRODUCT STORY -->
+<header class="brand-header" aria-label="GLORIYAH">
+  <a href="#product" aria-label="GLORIYAH — back to clothing">
+    <span class="brand-mark brand-emblem" aria-hidden="true"></span>
+    <span class="brand-mark brand-wordmark" aria-hidden="true"></span>
+  </a>
+</header>
 <section class="section-pad" id="product">
   <div class="wrap">
     <div class="section-head reveal">
@@ -964,6 +1004,7 @@
 <!-- ============================================================= -->
 <footer>
   <div class="wrap">
+    <img class="footer-brand" src="/assets/brand/gloriyah-logo.svg" alt="GLORIYAH orbital emblem and wordmark" width="816" height="884" loading="lazy">
     <div class="eyebrow">FOLLOW THE ARCHIVE</div>
     <div class="follow-row reveal">
       <a href="#" onclick="return false">INSTAGRAM</a>
@@ -1118,6 +1159,7 @@
   function veilCutTo(){
     function finish(){
       heroWrap.style.display = 'none';
+      document.body.classList.add('store-entered');
       window.scrollTo(0, 0);
       htmlEl.style.overflow = prevHtmlOverflow;
       document.body.style.overflow = prevBodyOverflow;
@@ -2200,4 +2242,3 @@
 
 })();
 </script>
-
